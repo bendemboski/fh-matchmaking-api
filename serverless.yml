@@ -1,0 +1,91 @@
+service: fh-matchmaking-api
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: us-west-2
+  profile: fh
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "cognito-idp:AdminCreateUser"
+      Resource:
+        Fn::Join:
+          - ''
+          -
+            - 'arn:aws:cognito-idp:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':userpool/'
+            - Ref: UserPool
+
+functions:
+  app:
+    handler: app.server # reference the file and exported method
+    environment:
+      USER_POOL:
+        Ref: UserPool
+      USER_POOL_CLIENT:
+        Ref: UserPoolClient
+      REGION:
+        Ref: AWS::Region
+
+    events: # events trigger lambda functions
+      - http: # this is an API Gateway HTTP event trigger
+          path: /
+          method: ANY
+          cors: true
+      - http: # all routes get proxied to the Express router
+          path: /{proxy+}
+          method: ANY
+          cors: true
+
+resources:
+  Resources:
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:service}-user-pool
+        AdminCreateUserConfig:
+          AllowAdminCreateUserOnly: true
+        AutoVerifiedAttributes:
+          - "email"
+        UsernameAttributes:
+          - "email"
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+        Schema:
+          - Name: given_name
+            AttributeDataType: String
+            Mutable: true
+            Required: true
+          - Name: family_name
+            AttributeDataType: String
+            Mutable: true
+            Required: true
+          - Name: type
+            AttributeDataType: String
+            Mutable: true
+            Required: false
+    UserPoolClient:
+      Type: "AWS::Cognito::UserPoolClient"
+      Properties:
+        ClientName: ${self:service}-client
+        GenerateSecret: false
+        UserPoolId:
+          Ref: UserPool
+
+  Outputs:
+      UserPoolId:
+        Value:
+          Ref: UserPool
+        Export:
+          Name: "UserPool::Id"
+      UserPoolClientId:
+        Value:
+          Ref: UserPoolClient
+        Export:
+          Name: "UserPoolClient::Id"

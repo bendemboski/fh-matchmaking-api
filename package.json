@@ -1,0 +1,21 @@
+{
+  "name": "fh-matchmaking-api",
+  "version": "1.0.0",
+  "description": "Facing Homelessness Block Project Matchmaking API",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "amazon-cognito-identity-js": "^2.0.19",
+    "aws-sdk": "^2.282.1",
+    "cognito-express": "^2.0.10",
+    "express": "^4.16.3",
+    "express-async-handler": "^1.1.3",
+    "express-validator": "^5.3.0",
+    "serverless-http": "^1.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.2.0",
+    "eslint-plugin-node": "^7.0.1",
+    "serverless": "^1.29.1"
+  }
+}
