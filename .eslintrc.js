@@ -25,6 +25,7 @@ module.exports = {
     'indent': [ 'error', 2 ],
     'keyword-spacing': [ 'error', { 'before': true, 'after': true } ],
     'new-parens': 'error',
+    'no-console': [ 'error', { allow: [ 'error' ] } ],
     'no-duplicate-imports': 'error',
     'no-global-assign': 'error',
     'no-loop-func': 'error',
