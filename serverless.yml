@@ -66,15 +66,45 @@ resources:
             AttributeDataType: String
             Mutable: true
             Required: true
+          - Name: birthdate
+            AttributeDataType: String
+            Mutable: true
+            Required: false
+            StringAttributeConstraints:
+              MinLength: 10
+              MaxLength: 10
+          - Name: phone_number
+            AttributeDataType: String
+            Mutable: true
+            Required: false
           - Name: type
             AttributeDataType: String
             Mutable: true
             Required: false
     UserPoolClient:
-      Type: "AWS::Cognito::UserPoolClient"
+      Type: AWS::Cognito::UserPoolClient
       Properties:
         ClientName: ${self:service}-client
         GenerateSecret: false
+        UserPoolId:
+          Ref: UserPool
+    AdminUser:
+      Type: AWS::Cognito::UserPoolUser
+      Properties:
+        DesiredDeliveryMediums:
+          - EMAIL
+        Username: bendemboski@gmail.com
+        UserAttributes:
+          - Name: given_name
+            Value: Ben
+          - Name: family_name
+            Value: Demboski
+          - Name: email
+            Value: bendemboski@gmail.com
+          - Name: email_verified
+            Value: false
+          - Name: custom:type
+            Value: admin
         UserPoolId:
           Ref: UserPool
 
