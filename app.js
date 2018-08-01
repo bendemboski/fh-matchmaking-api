@@ -1,6 +1,7 @@
 const express = require('express');
 const sls = require('serverless-http');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const { check, validationResult } = require('express-validator/check');
 const asyncHandler = require('express-async-handler');
 
@@ -13,6 +14,7 @@ const AWS = require('aws-sdk');
 let app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 useCognitoAuth(app);
 
 app.post('/createUser', [
