@@ -10,6 +10,7 @@ provider:
     - Effect: "Allow"
       Action:
         - "cognito-idp:AdminCreateUser"
+        - "cognito-idp:AdminAddUserToGroup"
       Resource:
         Fn::Join:
           - ''
@@ -50,6 +51,7 @@ resources:
         UserPoolName: ${self:service}-user-pool
         AdminCreateUserConfig:
           AllowAdminCreateUserOnly: true
+          UnusedAccountValidityDays: 365
         AutoVerifiedAttributes:
           - "email"
         UsernameAttributes:
@@ -77,10 +79,27 @@ resources:
             AttributeDataType: String
             Mutable: true
             Required: false
-          - Name: type
-            AttributeDataType: String
-            Mutable: true
-            Required: false
+    UserPoolAdminGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        Description: Admin users
+        GroupName: admins
+        UserPoolId:
+          Ref: UserPool
+    UserPoolHostGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        Description: Host users
+        GroupName: hosts
+        UserPoolId:
+          Ref: UserPool
+    UserPoolGuestGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        Description: Guest users
+        GroupName: guests
+        UserPoolId:
+          Ref: UserPool
     UserPoolClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
@@ -103,8 +122,6 @@ resources:
             Value: bendemboski@gmail.com
           - Name: email_verified
             Value: false
-          - Name: custom:type
-            Value: admin
         UserPoolId:
           Ref: UserPool
 

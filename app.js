@@ -24,7 +24,7 @@ app.post('/createUser', [
   check('familyName').exists()
 ], asyncHandler(async (req, res) => {
   if (!isAdmin(res)) {
-    return res.status(403).send('NOT ALLOWED');
+    return res.status(403).send();
   }
 
   let errors = validationResult(req);
@@ -33,10 +33,15 @@ app.post('/createUser', [
   }
 
   let { type, email, givenName, familyName } = req.body;
-  let params = {
+  let provider = new AWS.CognitoIdentityServiceProvider();
+  let { User: user } = await provider.adminCreateUser({
     UserPoolId: cognitoUserPoolId,
     Username: email,
     UserAttributes: [
+      {
+        Name: 'email',
+        Value: email
+      },
       {
         Name: 'given_name',
         Value: givenName
@@ -46,21 +51,33 @@ app.post('/createUser', [
         Value: familyName
       },
       {
-        Name: 'custom:type',
-        Value: type
+        Name: 'email_verified',
+        Value: 'true'
       }
     ],
     DesiredDeliveryMediums: [ 'EMAIL' ]
-  };
-  let provider = new AWS.CognitoIdentityServiceProvider();
-  let user = await provider.adminCreateUser(params).promise();
+  }).promise();
+
+  await provider.adminAddUserToGroup({
+    GroupName: `${type}s`,
+    UserPoolId: cognitoUserPoolId,
+    Username: user.Username
+  }).promise();
+
   res.status(201).json(user);
 }));
 
 // Log errors
 app.use(function(err, req, res, next) {
   console.error(err);
-  next(err);
+
+  let { requestId, statusCode, code, message } = err;
+  if (requestId && statusCode && code && message) {
+    // AWS SDK error
+    res.status(statusCode).json({ code, message });
+  } else {
+    next(err);
+  }
 });
 
 module.exports.server = sls(app);
