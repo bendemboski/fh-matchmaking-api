@@ -6,10 +6,13 @@ const { check, validationResult } = require('express-validator/check');
 const asyncHandler = require('express-async-handler');
 
 const { cognitoUserPoolId } = require('./lib/environment');
-const { useCognitoAuth, isAdmin } = require('./lib/cognito-auth');
+const { useCognitoAuth, isAdmin, isGuest } = require('./lib/cognito-auth');
+const getFullList = require('./lib/get-full-list');
+const serializeUser = require('./lib/serialize-user');
 
 // AWS
 const AWS = require('aws-sdk');
+const provider = new AWS.CognitoIdentityServiceProvider();
 
 let app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -17,6 +20,9 @@ app.use(bodyParser.json());
 app.use(cors());
 useCognitoAuth(app);
 
+//
+// (admin) Create new user
+//
 app.post('/createUser', [
   check('type').isIn([ 'host', 'guest', 'admin' ]),
   check('email').isEmail(),
@@ -33,7 +39,6 @@ app.post('/createUser', [
   }
 
   let { type, email, givenName, familyName } = req.body;
-  let provider = new AWS.CognitoIdentityServiceProvider();
   let { User: user } = await provider.adminCreateUser({
     UserPoolId: cognitoUserPoolId,
     Username: email,
@@ -65,6 +70,65 @@ app.post('/createUser', [
   }).promise();
 
   res.status(201).json(user);
+}));
+
+//
+// (admin) Get stats for a given user type:
+//
+// {
+//   count: <number of users>
+// }
+//
+app.get('/:group/stats', asyncHandler(async (req, res) => {
+  if (!isAdmin(res)) {
+    return res.status(403).send();
+  }
+
+  let { group } = req.params;
+  if (![ 'admins', 'guests', 'hosts' ].includes(group)) {
+    return res.status(404).send();
+  }
+
+  let { length: count } = await getFullList((attrs) => {
+    return provider.listUsersInGroup(attrs).promise();
+  }, {
+    GroupName: group,
+    UserPoolId: cognitoUserPoolId
+  }, 'Users');
+
+  return res.status(200).json({ count });
+}));
+
+//
+// Get list of users for a given type
+//
+app.get('/:group/users', asyncHandler(async (req, res) => {
+  let { group } = req.params;
+
+  if (group === 'guests') {
+    // Only admins can list guests
+    if (!isAdmin(res)) {
+      return res.status(403).send();
+    }
+  } else if (group === 'hosts') {
+    // Admins and guests can list hosts
+    if (!isAdmin(res) && !isGuest(res)) {
+      return res.status(403).send();
+    }
+  } else {
+    // Unknown group (listing admins is not supported)
+    return res.status(404).send();
+  }
+
+  let users = await getFullList((attrs) => {
+    return provider.listUsersInGroup(attrs).promise();
+  }, {
+    GroupName: group,
+    UserPoolId: cognitoUserPoolId
+  }, 'Users');
+
+  // For now all we show is the name (until we pull profile info from Dynamo)
+  return res.status(200).json({ users: users.map(serializeUser) });
 }));
 
 // Log errors
