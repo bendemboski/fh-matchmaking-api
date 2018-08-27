@@ -33,6 +33,10 @@ functions:
         Ref: UserPoolClient
       REGION:
         Ref: AWS::Region
+      HOST_PROFILES_TABLE:
+        Ref: HostProfilesTable
+      RESIDENT_PROFILES_TABLE:
+        Ref: ResidentProfilesTable
 
     events: # events trigger lambda functions
       - http: # this is an API Gateway HTTP event trigger
@@ -94,11 +98,11 @@ resources:
         GroupName: hosts
         UserPoolId:
           Ref: UserPool
-    UserPoolGuestGroup:
+    UserPoolCaseworkerGroup:
       Type: AWS::Cognito::UserPoolGroup
       Properties:
-        Description: Guest users
-        GroupName: guests
+        Description: Caseworker users
+        GroupName: caseworkers
         UserPoolId:
           Ref: UserPool
     UserPoolClient:
@@ -125,6 +129,59 @@ resources:
             Value: false
         UserPoolId:
           Ref: UserPool
+    HostProfilesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-host-profiles
+        AttributeDefinitions:
+          - AttributeName: User
+            AttributeType: S
+          - AttributeName: Visible
+            AttributeType: N
+        KeySchema:
+          - AttributeName: User
+            KeyType: HASH
+          - AttributeName: Visible
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 5
+    ResidentProfilesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-resident-profiles
+        AttributeDefinitions:
+          - AttributeName: Id
+            AttributeType: S
+          - AttributeName: Caseworker
+            AttributeType: S
+          - AttributeName: MatchedHost
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Caseworker
+            KeyType: HASH
+          - AttributeName: Id
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 5
+        GlobalSecondaryIndexes:
+          - IndexName: matches
+            KeySchema:
+              - AttributeName: MatchedHost
+                KeyType: HASH
+            Projection:
+              NonKeyAttributes:
+                - FirstName
+                - LastName
+              ProjectionType: INCLUDE
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+    MediaBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-media
 
   Outputs:
     UserPoolId:
@@ -137,6 +194,18 @@ resources:
         Ref: UserPoolClient
       Export:
         Name: "UserPoolClient::Id"
-
-plugins:
-  - serverless-offline
+    HostProfilesTableName:
+      Value:
+        Ref: HostProfilesTable
+      Export:
+        Name: "HostProfilesTable::Name"
+    ResidentProfilesTableName:
+      Value:
+        Ref: ResidentProfilesTable
+      Export:
+        Name: "ResidentProfilesTable::Name"
+    MediaBucketName:
+      Value:
+        Ref: MediaBucket
+      Export:
+        Name: "MediaBucket::Name"

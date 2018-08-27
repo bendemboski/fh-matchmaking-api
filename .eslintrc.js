@@ -1,8 +1,11 @@
 module.exports = {
   root: true,
-  parserOptions: { ecmaVersion: 2017 },
+  parserOptions: {
+    ecmaVersion: 2017
+  },
   env: {
-    'node': true
+    'node': true,
+    'es6': true
   },
   extends: [
     'eslint:recommended'
@@ -61,5 +64,15 @@ module.exports = {
     'space-in-parens': 'error',
     'space-infix-ops': 'error',
     'template-curly-spacing': 'error'
-  }
+  },
+  overrides: [
+    {
+      files: [
+        'tests/**/*.js'
+      ],
+      env: {
+        mocha: true
+      }
+    }
+  ]
 };
