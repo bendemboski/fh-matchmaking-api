@@ -21,6 +21,27 @@ class FakeCognitoProvider {
     return promise({ User: this.buildUser(username) });
   }
 
+  adminUpdateUserAttributes({ Username: username, UserAttributes: attributes }) {
+    let user = this.users[username];
+    if (!user) {
+      let e = new Error('User does not exist.');
+      e.code = 'UserNotFoundException';
+      e.statusCode = 400;
+      return promiseError(e);
+    }
+
+    attributes.forEach((attr) => {
+      let old = user.find(({ Name: name }) => name === attr.Name);
+      if (old) {
+        old.Value = attr.Value;
+      } else {
+        user.push(attr);
+      }
+    });
+
+    return promise();
+  }
+
   adminAddUserToGroup({ Username: username, GroupName: group }) {
     this.groups[group].push(username);
     return promise();
@@ -34,10 +55,19 @@ class FakeCognitoProvider {
 
   adminGetUser({ Username: username }) {
     if (!this.users[username]) {
-      return promise(null);
+      let e = new Error('User does not exist.');
+      e.code = 'UserNotFoundException';
+      e.statusCode = 400;
+      return promiseError(e);
     }
 
-    return promise(this.buildUser(username));
+    return promise(this.buildUser(username, 'UserAttributes'));
+  }
+
+  adminListGroupsForUser({ Username: username }) {
+    return promise({
+      Groups: [ { GroupName: this._group(username) } ]
+    });
   }
 
   testAddUsers(usersByGroup) {
@@ -57,29 +87,37 @@ class FakeCognitoProvider {
       return {
         username,
         attributes: this.users[username],
-        group: Object.keys(this.groups).find((name) => this.groups[name].includes(username))
+        group: this._group(username)
       };
     });
   }
 
-  buildUser(username) {
+  buildUser(username, attributesKey = 'Attributes') {
     if (!this.users[username]) {
       throw new Error(`User not found: ${username}`);
     }
 
     return {
       Username: username,
-      Attributes: this.users[username]
+      [attributesKey]: this.users[username]
     };
   }
 
   _username() {
     return `fakeuser${this.usernameIndex++}`;
   }
+
+  _group(username) {
+    return Object.keys(this.groups).find((name) => this.groups[name].includes(username));
+  }
 }
 
 function promise(response) {
   return { promise: () => Promise.resolve(response) };
+}
+
+function promiseError(e) {
+  return { promise: () => Promise.reject(e) };
 }
 
 module.exports = function setupCognito() {

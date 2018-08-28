@@ -184,6 +184,21 @@ describe('get user', function() {
       let res = await chai.request(buildApp()).get('/caseworkers/notanid');
       expect(res).to.have.status(404);
     });
+
+    it('getting admin as wrong type 404s', async function() {
+      let res = await chai.request(buildApp()).get(`/admin/${hostId}`);
+      expect(res).to.have.status(404);
+    });
+
+    it('getting host as wrong type 404s', async function() {
+      let res = await chai.request(buildApp()).get(`/hosts/${caseworkerId}`);
+      expect(res).to.have.status(404);
+    });
+
+    it('getting caseworker as wrong type 404s', async function() {
+      let res = await chai.request(buildApp()).get(`/caseworkers/${adminId}`);
+      expect(res).to.have.status(404);
+    });
   });
 
   describe('caseworker', function() {

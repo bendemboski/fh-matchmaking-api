@@ -7,29 +7,36 @@ const sinon = require('sinon');
 
 describe('create user', function() {
   let provider = setupCognito();
-  let postData;
 
   beforeEach(function() {
     authStub.stub(sinon, 'admins');
-    postData = {
-      data: {
-        type: 'users',
-        attributes: {
-          email: 'user@domain.com',
-          givenName: 'Person',
-          familyName: 'McHuman'
-        }
-      }
-    };
   });
 
   afterEach(function() {
     sinon.restore();
   });
 
+  function sort(attrs) {
+    return attrs.sort(({ Name: nameA }, { Name: nameB }) => nameA.localeCompare(nameB));
+  }
+
   [ 'host', 'caseworker', 'admin' ].forEach((type) => {
     describe(type, function() {
       let endpoint = `/${type}s`;
+      let postData;
+
+      beforeEach(function() {
+        postData = {
+          data: {
+            type,
+            attributes: {
+              email: 'user@domain.com',
+              givenName: 'Person',
+              familyName: 'McHuman'
+            }
+          }
+        };
+      });
 
       it('fails when not admin', async function() {
         authStub.setUserGroup('hosts');
@@ -69,7 +76,7 @@ describe('create user', function() {
 
         let { attributes, group } = users[0];
         expect(group).to.equal(`${type}s`);
-        expect(attributes).to.deep.equal([
+        expect(sort(attributes)).to.deep.equal(sort([
           {
             Name: 'email',
             Value: 'user@domain.com'
@@ -86,7 +93,7 @@ describe('create user', function() {
             Name: 'email_verified',
             Value: 'true'
           }
-        ]);
+        ]));
 
         expect(res.body.data.id).to.not.be.empty;
         delete res.body.data.id;

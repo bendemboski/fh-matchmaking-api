@@ -221,8 +221,18 @@ describe('cognito', function() {
     });
 
     it('works', async function() {
-      getUserPromiseStub.resolves({ Username: 'steve' });
-      await expect(cognito.getUser('steve')).to.eventually.deep.equal({ Username: 'steve' });
+      getUserPromiseStub.resolves({
+        Username: 'steve',
+        UserAttributes: [
+          { Name: 'key', Value: 'value' }
+        ]
+      });
+      await expect(cognito.getUser('steve')).to.eventually.deep.equal({
+        Username: 'steve',
+        Attributes: [
+          { Name: 'key', Value: 'value' }
+        ]
+      });
 
       expect(cognito.provider.adminGetUser).to.have.been.calledOnce;
       expect(cognito.provider.adminGetUser).to.have.been.calledWith({
