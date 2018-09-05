@@ -12,6 +12,9 @@ provider:
         - "cognito-idp:AdminCreateUser"
         - "cognito-idp:AdminAddUserToGroup"
         - "cognito-idp:ListUsersInGroup"
+        - "cognito-idp:AdminGetUser"
+        - "cognito-idp:AdminListGroupsForUser"
+        - "cognito-idp:AdminUpdateUserAttributes"
       Resource:
         Fn::Join:
           - ''
