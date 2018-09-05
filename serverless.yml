@@ -16,15 +16,20 @@ provider:
         - "cognito-idp:AdminListGroupsForUser"
         - "cognito-idp:AdminUpdateUserAttributes"
       Resource:
-        Fn::Join:
-          - ''
-          -
-            - 'arn:aws:cognito-idp:'
-            - Ref: 'AWS::Region'
-            - ':'
-            - Ref: 'AWS::AccountId'
-            - ':userpool/'
-            - Ref: UserPool
+        Fn::GetAtt:
+          - UserPool
+          - Arn
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:Scan"
+        - "dynamodb:Query"
+      Resource:
+        - Fn::GetAtt:
+            - HostProfilesTable
+            - Arn
+        - Fn::GetAtt:
+            - ResidentProfilesTable
+            - Arn
 
 functions:
   app:
