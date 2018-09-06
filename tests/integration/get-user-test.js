@@ -1,10 +1,9 @@
-const chai = require('chai');
-const { expect } = chai;
+const { expect } = require('chai');
+const factory = require('../helpers/request-factory');
 const setupDynamo = require('../helpers/setup-dynamo');
 const setupCognito = require('../helpers/setup-cognito');
 const authStub = require('../helpers/auth-stub');
 const AWS = require('aws-sdk');
-const buildApp = require('../../lib/build-app');
 const sinon = require('sinon');
 
 describe('get user', function() {
@@ -47,7 +46,7 @@ describe('get user', function() {
     });
 
     it('can get admins', async function() {
-      let res = await chai.request(buildApp()).get(`/admins/${adminId}`);
+      let res = await factory.get(`/admins/${adminId}`);
       expect(res).to.have.status(200);
       expect(res.body).to.deep.equal({
         data: {
@@ -63,7 +62,7 @@ describe('get user', function() {
     });
 
     it('can get hosts', async function() {
-      let res = await chai.request(buildApp()).get(`/hosts/${hostId}`);
+      let res = await factory.get(`/hosts/${hostId}`);
       expect(res).to.have.status(200);
       expect(res.body).to.deep.equal({
         data: {
@@ -79,7 +78,7 @@ describe('get user', function() {
     });
 
     it('can get caseworkers', async function() {
-      let res = await chai.request(buildApp()).get(`/caseworkers/${caseworkerId}`);
+      let res = await factory.get(`/caseworkers/${caseworkerId}`);
       expect(res).to.have.status(200);
 
       delete res.body.data.relationships;
@@ -107,7 +106,7 @@ describe('get user', function() {
         }
       }).promise();
 
-      let res = await chai.request(buildApp()).get(`/hosts/${hostId}`);
+      let res = await factory.get(`/hosts/${hostId}`);
       expect(res).to.have.status(200);
       expect(res.body.data.relationships).to.deep.equal({
         profile: {
@@ -140,7 +139,7 @@ describe('get user', function() {
         }
       }).promise();
 
-      let res = await chai.request(buildApp()).get(`/caseworkers/${caseworkerId}`);
+      let res = await factory.get(`/caseworkers/${caseworkerId}`);
       expect(res).to.have.status(200);
       expect(res.body.data.relationships).to.deep.equal({
         residents: {
@@ -171,32 +170,32 @@ describe('get user', function() {
     });
 
     it('getting admin 404s', async function() {
-      let res = await chai.request(buildApp()).get('/caseworkers/notanid');
+      let res = await factory.get('/caseworkers/notanid');
       expect(res).to.have.status(404);
     });
 
     it('getting host 404s', async function() {
-      let res = await chai.request(buildApp()).get('/hosts/notanid');
+      let res = await factory.get('/hosts/notanid');
       expect(res).to.have.status(404);
     });
 
     it('getting caseworker 404s', async function() {
-      let res = await chai.request(buildApp()).get('/caseworkers/notanid');
+      let res = await factory.get('/caseworkers/notanid');
       expect(res).to.have.status(404);
     });
 
     it('getting admin as wrong type 404s', async function() {
-      let res = await chai.request(buildApp()).get(`/admin/${hostId}`);
+      let res = await factory.get(`/admin/${hostId}`);
       expect(res).to.have.status(404);
     });
 
     it('getting host as wrong type 404s', async function() {
-      let res = await chai.request(buildApp()).get(`/hosts/${caseworkerId}`);
+      let res = await factory.get(`/hosts/${caseworkerId}`);
       expect(res).to.have.status(404);
     });
 
     it('getting caseworker as wrong type 404s', async function() {
-      let res = await chai.request(buildApp()).get(`/caseworkers/${adminId}`);
+      let res = await factory.get(`/caseworkers/${adminId}`);
       expect(res).to.have.status(404);
     });
   });
@@ -207,12 +206,12 @@ describe('get user', function() {
     });
 
     it('cannot get admins', async function() {
-      let res = await chai.request(buildApp()).get(`/admins/${adminId}`);
+      let res = await factory.get(`/admins/${adminId}`);
       expect(res).to.have.status(403);
     });
 
     it('can get hosts', async function() {
-      let res = await chai.request(buildApp()).get(`/hosts/${hostId}`);
+      let res = await factory.get(`/hosts/${hostId}`);
       expect(res).to.have.status(200);
 
       expect(res.body).to.deep.equal({
@@ -237,7 +236,7 @@ describe('get user', function() {
         }
       }).promise();
 
-      let res = await chai.request(buildApp()).get(`/caseworkers/${caseworkerId}`);
+      let res = await factory.get(`/caseworkers/${caseworkerId}`);
       expect(res).to.have.status(200);
 
       expect(res.body).to.deep.equal({
@@ -271,7 +270,7 @@ describe('get user', function() {
     });
 
     it('cannot get non-self caseworkers', async function() {
-      let res = await chai.request(buildApp()).get(`/caseworkers/${provider.groups.caseworkers[1]}`);
+      let res = await factory.get(`/caseworkers/${provider.groups.caseworkers[1]}`);
       expect(res).to.have.status(403);
     });
 
@@ -286,7 +285,7 @@ describe('get user', function() {
         }
       }).promise();
 
-      let res = await chai.request(buildApp()).get(`/hosts/${hostId}`);
+      let res = await factory.get(`/hosts/${hostId}`);
       expect(res).to.have.status(200);
       expect(res.body.data.relationships).to.deep.equal({
         profile: {
@@ -313,7 +312,7 @@ describe('get user', function() {
     });
 
     it('cannot get admins', async function() {
-      let res = await chai.request(buildApp()).get(`/admins/${adminId}`);
+      let res = await factory.get(`/admins/${adminId}`);
       expect(res).to.have.status(403);
     });
 
@@ -327,7 +326,7 @@ describe('get user', function() {
         }
       }).promise();
 
-      let res = await chai.request(buildApp()).get(`/hosts/${hostId}`);
+      let res = await factory.get(`/hosts/${hostId}`);
       expect(res).to.have.status(200);
 
       expect(res.body).to.deep.equal({
@@ -360,12 +359,12 @@ describe('get user', function() {
     });
 
     it('cannot get non-self hosts', async function() {
-      let res = await chai.request(buildApp()).get(`/hosts/${provider.groups.hosts[1]}`);
+      let res = await factory.get(`/hosts/${provider.groups.hosts[1]}`);
       expect(res).to.have.status(403);
     });
 
     it('cannot get caseworkers', async function() {
-      let res = await chai.request(buildApp()).get(`/caseworkers/${caseworkerId}`);
+      let res = await factory.get(`/caseworkers/${caseworkerId}`);
       expect(res).to.have.status(403);
     });
   });

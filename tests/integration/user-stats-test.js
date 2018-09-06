@@ -1,6 +1,5 @@
-const chai = require('chai');
-const { expect } = chai;
-const buildApp = require('../../lib/build-app');
+const { expect } = require('chai');
+const factory = require('../helpers/request-factory');
 const authStub = require('../helpers/auth-stub');
 const setupCognito = require('../helpers/setup-cognito');
 const setupDynamo = require('../helpers/setup-dynamo');
@@ -22,7 +21,7 @@ describe('userStats', function() {
   it('fails when not admin', async function() {
     authStub.setUserGroup('hosts');
 
-    let res = await chai.request(buildApp()).get('/userStats');
+    let res = await factory.get('/userStats');
     expect(res).to.have.status(403);
   });
 
@@ -44,7 +43,7 @@ describe('userStats', function() {
       }
     }).promise();
 
-    let res = await chai.request(buildApp()).get('/userStats');
+    let res = await factory.get('/userStats');
     expect(res).to.have.status(200);
     expect(res.body).to.deep.equal({ hosts: 2, residents: 3 });
   });

@@ -1,10 +1,9 @@
-const chai = require('chai');
-const { expect } = chai;
+const { expect } = require('chai');
+const factory = require('../helpers/request-factory');
 const setupDynamo = require('../helpers/setup-dynamo');
 const setupCognito = require('../helpers/setup-cognito');
 const authStub = require('../helpers/auth-stub');
 const AWS = require('aws-sdk');
-const buildApp = require('../../lib/build-app');
 const sinon = require('sinon');
 
 describe('list users', function() {
@@ -38,7 +37,7 @@ describe('list users', function() {
     });
 
     it('can list admins', async function() {
-      let res = await chai.request(buildApp()).get('/admins');
+      let res = await factory.get('/admins');
       expect(res).to.have.status(200);
 
       expect(res.body.data[0].id).to.not.be.empty;
@@ -59,7 +58,7 @@ describe('list users', function() {
     });
 
     it('can list hosts', async function() {
-      let res = await chai.request(buildApp()).get('/hosts');
+      let res = await factory.get('/hosts');
       expect(res).to.have.status(200);
 
       expect(res.body.data[0].id).to.not.be.empty;
@@ -90,7 +89,7 @@ describe('list users', function() {
     });
 
     it('can list caseworkers', async function() {
-      let res = await chai.request(buildApp()).get('/caseworkers');
+      let res = await factory.get('/caseworkers');
       expect(res).to.have.status(200);
 
       expect(res.body.data[0].id).to.not.be.empty;
@@ -144,7 +143,7 @@ describe('list users', function() {
         }
       }).promise();
 
-      let res = await chai.request(buildApp()).get('/hosts');
+      let res = await factory.get('/hosts');
       expect(res).to.have.status(200);
       expect(res.body.data[0].relationships).to.deep.equal({
         profile: {
@@ -178,7 +177,7 @@ describe('list users', function() {
         }
       }).promise();
 
-      let res = await chai.request(buildApp()).get('/caseworkers');
+      let res = await factory.get('/caseworkers');
       expect(res).to.have.status(200);
       expect(res.body.data[0].relationships).to.deep.equal({
         residents: {
@@ -235,12 +234,12 @@ describe('list users', function() {
     });
 
     it('cannot list admins', async function() {
-      let res = await chai.request(buildApp()).get('/admins');
+      let res = await factory.get('/admins');
       expect(res).to.have.status(403);
     });
 
     it('can list hosts', async function() {
-      let res = await chai.request(buildApp()).get('/hosts');
+      let res = await factory.get('/hosts');
       expect(res).to.have.status(200);
 
       expect(res.body.data[0].id).to.not.be.empty;
@@ -269,7 +268,7 @@ describe('list users', function() {
     });
 
     it('cannot list caseworkers', async function() {
-      let res = await chai.request(buildApp()).get('/caseworkers');
+      let res = await factory.get('/caseworkers');
       expect(res).to.have.status(403);
     });
 
@@ -284,7 +283,7 @@ describe('list users', function() {
         }
       }).promise();
 
-      let res = await chai.request(buildApp()).get('/hosts');
+      let res = await factory.get('/hosts');
       expect(res).to.have.status(200);
       expect(res.body.data[0].relationships).to.deep.equal({
         profile: {
@@ -312,17 +311,17 @@ describe('list users', function() {
     });
 
     it('cannot list admins', async function() {
-      let res = await chai.request(buildApp()).get('/admins');
+      let res = await factory.get('/admins');
       expect(res).to.have.status(403);
     });
 
     it('cannot list hosts', async function() {
-      let res = await chai.request(buildApp()).get('/hosts');
+      let res = await factory.get('/hosts');
       expect(res).to.have.status(403);
     });
 
     it('cannot list caseworkers', async function() {
-      let res = await chai.request(buildApp()).get('/caseworkers');
+      let res = await factory.get('/caseworkers');
       expect(res).to.have.status(403);
     });
   });

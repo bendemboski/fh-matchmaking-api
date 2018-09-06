@@ -1,8 +1,7 @@
-const chai = require('chai');
-const { expect } = chai;
+const { expect } = require('chai');
 const setupCognito = require('../helpers/setup-cognito');
 const authStub = require('../helpers/auth-stub');
-const buildApp = require('../../lib/build-app');
+const factory = require('../helpers/request-factory');
 const sinon = require('sinon');
 
 describe('update user', function() {
@@ -52,7 +51,7 @@ describe('update user', function() {
     });
 
     it('fails with invalid email', async function() {
-      let res = await chai.request(buildApp()).patch(`/admins/${adminId}`).send({
+      let res = await factory.patch(`/admins/${adminId}`, {
         data: {
           type: 'admins',
           id: adminId,
@@ -69,7 +68,7 @@ describe('update user', function() {
     });
 
     it('fails with invalid phone number', async function() {
-      let res = await chai.request(buildApp()).patch(`/admins/${adminId}`).send({
+      let res = await factory.patch(`/admins/${adminId}`, {
         data: {
           type: 'admins',
           id: adminId,
@@ -86,7 +85,7 @@ describe('update user', function() {
     });
 
     it('works with all attributes', async function() {
-      let res = await chai.request(buildApp()).patch(`/admins/${adminId}`).send({
+      let res = await factory.patch(`/admins/${adminId}`, {
         data: {
           type: 'admins',
           id: adminId,
@@ -126,7 +125,7 @@ describe('update user', function() {
     });
 
     it('works with a subset of attributes', async function() {
-      let res = await chai.request(buildApp()).patch(`/admins/${adminId}`).send({
+      let res = await factory.patch(`/admins/${adminId}`, {
         data: {
           type: 'admins',
           id: adminId,
@@ -161,7 +160,7 @@ describe('update user', function() {
     });
 
     it('can update self', async function() {
-      let res = await chai.request(buildApp()).patch(`/admins/${adminId}`).send({
+      let res = await factory.patch(`/admins/${adminId}`, {
         data: {
           type: 'admins',
           id: adminId,
@@ -175,7 +174,7 @@ describe('update user', function() {
     });
 
     it('can update other admin', async function() {
-      let res = await chai.request(buildApp()).patch(`/admins/${otherAdminId}`).send({
+      let res = await factory.patch(`/admins/${otherAdminId}`, {
         data: {
           type: 'admins',
           id: otherAdminId,
@@ -189,7 +188,7 @@ describe('update user', function() {
     });
 
     it('can update host', async function() {
-      let res = await chai.request(buildApp()).patch(`/hosts/${hostId}`).send({
+      let res = await factory.patch(`/hosts/${hostId}`, {
         data: {
           type: 'hosts',
           id: hostId,
@@ -203,7 +202,7 @@ describe('update user', function() {
     });
 
     it('can update caseworker', async function() {
-      let res = await chai.request(buildApp()).patch(`/caseworkers/${caseworkerId}`).send({
+      let res = await factory.patch(`/caseworkers/${caseworkerId}`, {
         data: {
           type: 'caseworkers',
           id: caseworkerId,
@@ -223,7 +222,7 @@ describe('update user', function() {
     });
 
     it('can update self', async function() {
-      let res = await chai.request(buildApp()).patch(`/hosts/${hostId}`).send({
+      let res = await factory.patch(`/hosts/${hostId}`, {
         data: {
           type: 'hosts',
           id: hostId,
@@ -237,7 +236,7 @@ describe('update user', function() {
     });
 
     it('cannot update other host', async function() {
-      let res = await chai.request(buildApp()).patch(`/hosts/${otherHostId}`).send({
+      let res = await factory.patch(`/hosts/${otherHostId}`, {
         data: {
           type: 'hosts',
           id: otherHostId,
@@ -251,7 +250,7 @@ describe('update user', function() {
     });
 
     it('cannot update admin', async function() {
-      let res = await chai.request(buildApp()).patch(`/admins/${adminId}`).send({
+      let res = await factory.patch(`/admins/${adminId}`, {
         data: {
           type: 'admins',
           id: adminId,
@@ -265,7 +264,7 @@ describe('update user', function() {
     });
 
     it('cannot update caseworker', async function() {
-      let res = await chai.request(buildApp()).patch(`/caseworkers/${caseworkerId}`).send({
+      let res = await factory.patch(`/caseworkers/${caseworkerId}`, {
         data: {
           type: 'caseworkers',
           id: caseworkerId,
@@ -285,7 +284,7 @@ describe('update user', function() {
     });
 
     it('can update self', async function() {
-      let res = await chai.request(buildApp()).patch(`/caseworkers/${caseworkerId}`).send({
+      let res = await factory.patch(`/caseworkers/${caseworkerId}`, {
         data: {
           type: 'caseworkers',
           id: caseworkerId,
@@ -299,7 +298,7 @@ describe('update user', function() {
     });
 
     it('cannot update other caseworker', async function() {
-      let res = await chai.request(buildApp()).patch(`/caseworkers/${otherCaseworkerId}`).send({
+      let res = await factory.patch(`/caseworkers/${otherCaseworkerId}`, {
         data: {
           type: 'caseworkers',
           id: otherCaseworkerId,
@@ -313,7 +312,7 @@ describe('update user', function() {
     });
 
     it('cannot update host', async function() {
-      let res = await chai.request(buildApp()).patch(`/hosts/${hostId}`).send({
+      let res = await factory.patch(`/hosts/${hostId}`, {
         data: {
           type: 'hosts',
           id: hostId,
@@ -327,7 +326,7 @@ describe('update user', function() {
     });
 
     it('cannot update admin', async function() {
-      let res = await chai.request(buildApp()).patch(`/admins/${adminId}`).send({
+      let res = await factory.patch(`/admins/${adminId}`, {
         data: {
           type: 'admins',
           id: adminId,

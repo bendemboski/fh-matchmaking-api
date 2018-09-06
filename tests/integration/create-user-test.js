@@ -1,6 +1,5 @@
-const chai = require('chai');
-const { expect } = chai;
-const buildApp = require('../../lib/build-app');
+const { expect } = require('chai');
+const factory = require('../helpers/request-factory');
 const setupCognito = require('../helpers/setup-cognito');
 const authStub = require('../helpers/auth-stub');
 const sinon = require('sinon');
@@ -41,34 +40,34 @@ describe('create user', function() {
       it('fails when not admin', async function() {
         authStub.setUserGroup('hosts');
 
-        let res = await chai.request(buildApp()).post(endpoint).send(postData);
+        let res = await factory.post(endpoint, postData);
         expect(res).to.have.status(403);
       });
 
       it('fails with a missing/invalid email', async function() {
         delete postData.data.attributes.email;
-        let res = await chai.request(buildApp()).post(endpoint).send(postData);
+        let res = await factory.post(endpoint, postData);
         expect(res).to.have.status(400);
 
         postData.data.attributes.email = 'invalid';
-        res = await chai.request(buildApp()).post(endpoint).send(postData);
+        res = await factory.post(endpoint, postData);
         expect(res).to.have.status(400);
       });
 
       it('fails with a missing givenName', async function() {
         delete postData.data.attributes.givenName;
-        let res = await chai.request(buildApp()).post(endpoint).send(postData);
+        let res = await factory.post(endpoint, postData);
         expect(res).to.have.status(400);
       });
 
       it('fails with a missing familyName', async function() {
         delete postData.data.attributes.familyName;
-        let res = await chai.request(buildApp()).post(endpoint).send(postData);
+        let res = await factory.post(endpoint, postData);
         expect(res).to.have.status(400);
       });
 
       it('works', async function() {
-        let res = await chai.request(buildApp()).post(endpoint).send(postData);
+        let res = await factory.post(endpoint, postData);
         expect(res).to.have.status(201);
 
         let users = provider.testGetUsers();
