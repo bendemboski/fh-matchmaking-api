@@ -40,6 +40,39 @@ describe('get user', function() {
     sinon.restore();
   });
 
+  it('serialization', async function() {
+    provider.testAddUsers({
+      admins: [
+        {
+          'given_name': 'Maeby',
+          'family_name': 'Funke',
+          'email': 'maeby@bluth.com',
+          'phone_number': '+12068675309',
+          'birthdate': '07-04-1970'
+        }
+      ]
+    });
+
+    authStub.stub(sinon, 'admins');
+
+    let id = provider.groups.admins[1];
+    let res = await factory.get(`/admins/${id}`);
+    expect(res).to.have.status(200);
+    expect(res.body).to.deep.equal({
+      data: {
+        type: 'admins',
+        id,
+        attributes: {
+          email: 'maeby@bluth.com',
+          givenName: 'Maeby',
+          familyName: 'Funke',
+          phoneNumber: '2068675309',
+          birthdate: '07-04-1970'
+        }
+      }
+    });
+  });
+
   describe('admin', function() {
     beforeEach(function() {
       authStub.stub(sinon, 'admins');
