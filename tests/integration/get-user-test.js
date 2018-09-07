@@ -235,7 +235,7 @@ describe('get user', function() {
 
   describe('caseworker', function() {
     beforeEach(function() {
-      authStub.stub(sinon, 'caseworkers', provider.buildUser(caseworkerId));
+      authStub.stub(sinon, 'caseworkers', caseworkerId);
     });
 
     it('cannot get admins', async function() {
@@ -341,7 +341,7 @@ describe('get user', function() {
 
   describe('host', function() {
     beforeEach(function() {
-      authStub.stub(sinon, 'hosts', provider.buildUser(hostId));
+      authStub.stub(sinon, 'hosts', hostId);
     });
 
     it('cannot get admins', async function() {

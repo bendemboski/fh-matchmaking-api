@@ -1,8 +1,8 @@
 const { cognito } = require('../../lib/aws');
 
 class AuthStub {
-  stub(sandbox, userGroup, user = {}) {
-    this.user = user;
+  stub(sandbox, userGroup, username) {
+    this.user = { 'cognito:username': username };
     this.setUserGroup(userGroup);
 
     sandbox.stub(cognito, 'setupExpress').callsFake((app) => {

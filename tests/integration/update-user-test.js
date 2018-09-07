@@ -156,7 +156,7 @@ describe('update user', function() {
 
   describe('admin', function() {
     beforeEach(function() {
-      authStub.stub(sinon, 'admins', provider.buildUser(adminId));
+      authStub.stub(sinon, 'admins', adminId);
     });
 
     it('can update self', async function() {
@@ -218,7 +218,7 @@ describe('update user', function() {
 
   describe('host', function() {
     beforeEach(function() {
-      authStub.stub(sinon, 'hosts', provider.buildUser(hostId));
+      authStub.stub(sinon, 'hosts', hostId);
     });
 
     it('can update self', async function() {
@@ -280,7 +280,7 @@ describe('update user', function() {
 
   describe('caseworker', function() {
     beforeEach(function() {
-      authStub.stub(sinon, 'caseworkers', provider.buildUser(caseworkerId));
+      authStub.stub(sinon, 'caseworkers', caseworkerId);
     });
 
     it('can update self', async function() {
