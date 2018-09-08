@@ -23,6 +23,8 @@ provider:
       Action:
         - "dynamodb:Scan"
         - "dynamodb:Query"
+        - "dynamodb:GetItem"
+        - "dynamoDb:UpdateItem"
       Resource:
         - Fn::GetAtt:
             - HostProfilesTable
@@ -142,15 +144,11 @@ resources:
       Properties:
         TableName: ${self:service}-host-profiles
         AttributeDefinitions:
-          - AttributeName: User
+          - AttributeName: Host
             AttributeType: S
-          - AttributeName: Visible
-            AttributeType: N
         KeySchema:
-          - AttributeName: User
+          - AttributeName: Host
             KeyType: HASH
-          - AttributeName: Visible
-            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 5

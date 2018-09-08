@@ -94,13 +94,14 @@ describe('create user', function() {
           }
         ]));
 
-        expect(res.body.data.id).to.not.be.empty;
-        delete res.body.data.id;
+        let { id } = res.body.data;
+        expect(id).to.be.ok;
         delete res.body.data.relationships;
         delete res.body.data.attributes.residents;
         expect(res.body).to.deep.equal({
           data: {
             type: `${type}s`,
+            id,
             attributes: {
               email: 'user@domain.com',
               givenName: 'Person',

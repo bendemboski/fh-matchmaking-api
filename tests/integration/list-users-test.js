@@ -40,13 +40,14 @@ describe('list users', function() {
       let res = await factory.get('/admins');
       expect(res).to.have.status(200);
 
-      expect(res.body.data[0].id).to.not.be.empty;
-      delete res.body.data[0].id;
+      let { id } = res.body.data[0];
+      expect(id).to.be.ok;
 
       expect(res.body).to.deep.equal({
         data: [
           {
             type: 'admins',
+            id,
             attributes: {
               email: 'heybrother@bluth.com',
               givenName: 'Buster',
@@ -61,15 +62,16 @@ describe('list users', function() {
       let res = await factory.get('/hosts');
       expect(res).to.have.status(200);
 
-      expect(res.body.data[0].id).to.not.be.empty;
-      delete res.body.data[0].id;
-      expect(res.body.data[1].id).to.not.be.empty;
-      delete res.body.data[1].id;
+      let { id: id1 } = res.body.data[0];
+      expect(id1).to.be.ok;
+      let { id: id2 } = res.body.data[1];
+      expect(id2).to.be.ok;
 
       expect(res.body).to.deep.equal({
         data: [
           {
             type: 'hosts',
+            id: id1,
             attributes: {
               email: 'lessonteacher@gmail.com',
               givenName: 'Jay',
@@ -78,6 +80,7 @@ describe('list users', function() {
           },
           {
             type: 'hosts',
+            id: id2,
             attributes: {
               email: 'hospitalbar@bluth.com',
               givenName: 'Lucille',
@@ -92,20 +95,21 @@ describe('list users', function() {
       let res = await factory.get('/caseworkers');
       expect(res).to.have.status(200);
 
-      expect(res.body.data[0].id).to.not.be.empty;
-      delete res.body.data[0].id;
+      let { id: id1 } = res.body.data[0];
+      expect(id1).to.be.ok;
       delete res.body.data[0].relationships;
-      expect(res.body.data[1].id).to.not.be.empty;
-      delete res.body.data[1].id;
+      let { id: id2 } = res.body.data[1];
+      expect(id2).to.be.ok;
       delete res.body.data[1].relationships;
-      expect(res.body.data[2].id).to.not.be.empty;
-      delete res.body.data[2].id;
+      let { id: id3 } = res.body.data[2];
+      expect(id3).to.be.ok;
       delete res.body.data[2].relationships;
 
       expect(res.body).to.deep.equal({
         data: [
           {
             type: 'caseworkers',
+            id: id1,
             attributes: {
               email: 'funnyorsomething@gmail.com',
               givenName: 'Ann',
@@ -114,6 +118,7 @@ describe('list users', function() {
           },
           {
             type: 'caseworkers',
+            id: id2,
             attributes: {
               email: 'illusions@bluth.com',
               givenName: 'Gob',
@@ -122,6 +127,7 @@ describe('list users', function() {
           },
           {
             type: 'caseworkers',
+            id: id3,
             attributes: {
               email: 'imgene@parmesan.com',
               givenName: 'Gene',
@@ -138,7 +144,7 @@ describe('list users', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { User: provider.groups.hosts[0], Visible: 0, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { Host: provider.groups.hosts[0], Visible: false, Greeting: 'hey brother' } } }
           ]
         }
       }).promise();
@@ -156,7 +162,7 @@ describe('list users', function() {
           type: 'host-profiles',
           id: provider.groups.hosts[0],
           attributes: {
-            user: provider.groups.hosts[0],
+            host: provider.groups.hosts[0],
             visible: false,
             greeting: 'hey brother'
           }
@@ -242,15 +248,16 @@ describe('list users', function() {
       let res = await factory.get('/hosts');
       expect(res).to.have.status(200);
 
-      expect(res.body.data[0].id).to.not.be.empty;
-      delete res.body.data[0].id;
-      expect(res.body.data[1].id).to.not.be.empty;
-      delete res.body.data[1].id;
+      let { id: id1 } = res.body.data[0];
+      expect(id1).to.be.ok;
+      let { id: id2 } = res.body.data[1];
+      expect(id2).to.be.ok;
 
       expect(res.body).to.deep.equal({
         data: [
           {
             type: 'hosts',
+            id: id1,
             attributes: {
               givenName: 'Jay',
               familyName: 'Walter-Weatherman'
@@ -258,6 +265,7 @@ describe('list users', function() {
           },
           {
             type: 'hosts',
+            id: id2,
             attributes: {
               givenName: 'Lucille',
               familyName: 'Bluth'
@@ -278,7 +286,7 @@ describe('list users', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { User: provider.groups.hosts[0], Visible: 0, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { Host: provider.groups.hosts[0], Visible: false, Greeting: 'hey brother' } } }
           ]
         }
       }).promise();
@@ -296,7 +304,7 @@ describe('list users', function() {
           type: 'host-profiles',
           id: provider.groups.hosts[0],
           attributes: {
-            user: provider.groups.hosts[0],
+            host: provider.groups.hosts[0],
             visible: false,
             greeting: 'hey brother'
           }

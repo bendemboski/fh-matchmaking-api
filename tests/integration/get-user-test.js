@@ -134,7 +134,7 @@ describe('get user', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { User: hostId, Visible: 0, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { Host: hostId, Visible: false, Greeting: 'hey brother' } } }
           ]
         }
       }).promise();
@@ -151,7 +151,7 @@ describe('get user', function() {
           type: 'host-profiles',
           id: hostId,
           attributes: {
-            user: hostId,
+            host: hostId,
             visible: false,
             greeting: 'hey brother'
           }
@@ -313,7 +313,7 @@ describe('get user', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { User: hostId, Visible: 0, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { Host: hostId, Visible: false, Greeting: 'hey brother' } } }
           ]
         }
       }).promise();
@@ -330,7 +330,7 @@ describe('get user', function() {
           type: 'host-profiles',
           id: hostId,
           attributes: {
-            user: hostId,
+            host: hostId,
             visible: false,
             greeting: 'hey brother'
           }
@@ -354,7 +354,7 @@ describe('get user', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { User: hostId, Visible: 0, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { Host: hostId, Visible: false, Greeting: 'hey brother' } } }
           ]
         }
       }).promise();
@@ -382,7 +382,7 @@ describe('get user', function() {
             type: 'host-profiles',
             id: hostId,
             attributes: {
-              user: hostId,
+              host: hostId,
               visible: false,
               greeting: 'hey brother'
             }
