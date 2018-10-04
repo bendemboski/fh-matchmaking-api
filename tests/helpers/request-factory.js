@@ -25,6 +25,12 @@ class RequestFactory {
       .set('Content-Type', jsonApiContentType)
       .send(data);
   }
+
+  async delete(url, data) {
+    return await chai.request(buildApp())
+      .delete(url)
+      .send(data);
+  }
 }
 
 module.exports = new RequestFactory();

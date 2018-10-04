@@ -204,6 +204,38 @@ describe('dynamo', function() {
     });
   });
 
+  describe('deleteHostProfile()', async function() {
+    let client;
+
+    beforeEach(async function() {
+      client = new AWS.DynamoDB.DocumentClient({ service });
+
+      await client.batchWrite({
+        RequestItems: {
+          [process.env.HOST_PROFILES_TABLE]: [
+            { PutRequest: { Item: { Host: '1', Visible: false } } }
+          ]
+        }
+      }).promise();
+    });
+
+    it('works', async function() {
+      await expect(dynamo.deleteHostProfile('1')).to.eventually.be.true;
+
+      await expect(client.scan({
+        TableName: process.env.HOST_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 0);
+    });
+
+    it('works when the profile does not exist', async function() {
+      await expect(dynamo.deleteHostProfile('2')).to.eventually.be.false;
+
+      await expect(client.scan({
+        TableName: process.env.HOST_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 1);
+    });
+  });
+
   describe('getResidentCount()', function() {
     beforeEach(async function() {
       let client = new AWS.DynamoDB.DocumentClient({ service });
@@ -510,6 +542,39 @@ describe('dynamo', function() {
         Some: 'one',
         Something: 'else'
       })).to.eventually.be.null;
+    });
+  });
+
+  describe('deleteResidentProfile()', async function() {
+    let client;
+
+    beforeEach(async function() {
+      client = new AWS.DynamoDB.DocumentClient({ service });
+
+      await client.batchWrite({
+        RequestItems: {
+          [process.env.RESIDENT_PROFILES_TABLE]: [
+            { PutRequest: { Item: { Id: '1', Caseworker: 'a', Some: 'thing' } } },
+            { PutRequest: { Item: { Id: '2', Caseworker: 'a', Some: 'thingy' } } }
+          ]
+        }
+      }).promise();
+    });
+
+    it('works', async function() {
+      await expect(dynamo.deleteResidentProfile('a', '2')).to.eventually.be.true;
+
+      await expect(client.scan({
+        TableName: process.env.RESIDENT_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 1);
+    });
+
+    it('works when the profile does not exist', async function() {
+      await expect(dynamo.deleteHostProfile('a', '3')).to.eventually.be.false;
+
+      await expect(client.scan({
+        TableName: process.env.RESIDENT_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 2);
     });
   });
 });
