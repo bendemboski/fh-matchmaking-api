@@ -36,7 +36,7 @@ describe('update host profile', function() {
     await client.batchWrite({
       RequestItems: {
         [process.env.HOST_PROFILES_TABLE]: [
-          { PutRequest: { Item: { Host: host, Visible: false } } }
+          { PutRequest: { Item: { host, visible: false } } }
         ]
       }
     }).promise();

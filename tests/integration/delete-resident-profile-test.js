@@ -36,8 +36,8 @@ describe('delete resident profile', function() {
     await client.update({
       TableName: process.env.RESIDENT_PROFILES_TABLE,
       Key: {
-        Caseworker: caseworker,
-        Id: id
+        caseworker,
+        id
       }
     }).promise();
   }

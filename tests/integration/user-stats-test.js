@@ -36,9 +36,9 @@ describe('userStats', function() {
     await client.batchWrite({
       RequestItems: {
         [process.env.RESIDENT_PROFILES_TABLE]: [
-          { PutRequest: { Item: { Id: '1', Caseworker: 'a', Email: 'steveholt@gmail.com' } } },
-          { PutRequest: { Item: { Id: '2', Caseworker: 'b', Email: 'oscar@bluth.com' } } },
-          { PutRequest: { Item: { Id: '3', Caseworker: 'b', Email: 'annyong@gmail.com' } } }
+          { PutRequest: { Item: { id: '1', caseworker: 'a', email: 'steveholt@gmail.com' } } },
+          { PutRequest: { Item: { id: '2', caseworker: 'b', email: 'oscar@bluth.com' } } },
+          { PutRequest: { Item: { id: '3', caseworker: 'b', email: 'annyong@gmail.com' } } }
         ]
       }
     }).promise();

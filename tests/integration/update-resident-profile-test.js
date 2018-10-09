@@ -36,8 +36,8 @@ describe('update resident profile', function() {
     await client.update({
       TableName: process.env.RESIDENT_PROFILES_TABLE,
       Key: {
-        Caseworker: caseworker,
-        Id: id
+        caseworker,
+        id
       }
     }).promise();
   }
@@ -70,14 +70,14 @@ describe('update resident profile', function() {
     await expect(client.get({
       TableName: process.env.RESIDENT_PROFILES_TABLE,
       Key: {
-        Caseworker: caseworkerId,
-        Id: 'a'
+        caseworker: caseworkerId,
+        id: 'a'
       }
     }).promise()).to.eventually.deep.include({
       Item: {
-        Caseworker: caseworkerId,
-        Id: 'a',
-        MatchedHost: 'ahost'
+        caseworker: caseworkerId,
+        id: 'a',
+        matchedHost: 'ahost'
       }
     });
 

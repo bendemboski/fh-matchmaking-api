@@ -144,7 +144,7 @@ describe('list users', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: provider.groups.hosts[0], Visible: false, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { host: provider.groups.hosts[0], visible: false, greeting: 'hey brother' } } }
           ]
         }
       }).promise();
@@ -176,9 +176,9 @@ describe('list users', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: '1', Caseworker: provider.groups.caseworkers[0], Email: 'steveholt@gmail.com' } } },
-            { PutRequest: { Item: { Id: '2', Caseworker: provider.groups.caseworkers[0], Email: 'oscar@bluth.com' } } },
-            { PutRequest: { Item: { Id: '3', Caseworker: provider.groups.caseworkers[1], Email: 'annyong@gmail.com' } } }
+            { PutRequest: { Item: { id: '1', caseworker: provider.groups.caseworkers[0], email: 'steveholt@gmail.com' } } },
+            { PutRequest: { Item: { id: '2', caseworker: provider.groups.caseworkers[0], email: 'oscar@bluth.com' } } },
+            { PutRequest: { Item: { id: '3', caseworker: provider.groups.caseworkers[1], email: 'annyong@gmail.com' } } }
           ]
         }
       }).promise();
@@ -286,7 +286,7 @@ describe('list users', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: provider.groups.hosts[0], Visible: false, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { host: provider.groups.hosts[0], visible: false, greeting: 'hey brother' } } }
           ]
         }
       }).promise();

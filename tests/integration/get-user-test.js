@@ -134,7 +134,7 @@ describe('get user', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: hostId, Visible: false, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { host: hostId, visible: false, greeting: 'hey brother' } } }
           ]
         }
       }).promise();
@@ -165,9 +165,9 @@ describe('get user', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: '1', Caseworker: caseworkerId, Email: 'steveholt@gmail.com' } } },
-            { PutRequest: { Item: { Id: '2', Caseworker: caseworkerId, Email: 'oscar@bluth.com' } } },
-            { PutRequest: { Item: { Id: '3', Caseworker: 'nobody', Email: 'annyong@gmail.com' } } }
+            { PutRequest: { Item: { id: '1', caseworker: caseworkerId, email: 'steveholt@gmail.com' } } },
+            { PutRequest: { Item: { id: '2', caseworker: caseworkerId, email: 'oscar@bluth.com' } } },
+            { PutRequest: { Item: { id: '3', caseworker: 'nobody', email: 'annyong@gmail.com' } } }
           ]
         }
       }).promise();
@@ -264,7 +264,7 @@ describe('get user', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: '1', Caseworker: caseworkerId, Email: 'steveholt@gmail.com' } } }
+            { PutRequest: { Item: { id: '1', caseworker: caseworkerId, email: 'steveholt@gmail.com' } } }
           ]
         }
       }).promise();
@@ -313,7 +313,7 @@ describe('get user', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: hostId, Visible: false, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { host: hostId, visible: false, greeting: 'hey brother' } } }
           ]
         }
       }).promise();
@@ -354,7 +354,7 @@ describe('get user', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: hostId, Visible: false, Greeting: 'hey brother' } } }
+            { PutRequest: { Item: { host: hostId, visible: false, greeting: 'hey brother' } } }
           ]
         }
       }).promise();

@@ -16,21 +16,21 @@ describe('dynamo', function() {
 
   describe('getHostProfiles()', function() {
     const expected = [
-      { Host: '1', Visible: false },
-      { Host: '2', Visible: false },
-      { Host: '3', Visible: false },
-      { Host: '4', Visible: false },
-      { Host: '5', Visible: false },
-      { Host: '6', Visible: false },
-      { Host: '7', Visible: false },
-      { Host: '8', Visible: false },
-      { Host: '9', Visible: false },
-      { Host: '10', Visible: false }
+      { host: '1', visible: false },
+      { host: '2', visible: false },
+      { host: '3', visible: false },
+      { host: '4', visible: false },
+      { host: '5', visible: false },
+      { host: '6', visible: false },
+      { host: '7', visible: false },
+      { host: '8', visible: false },
+      { host: '9', visible: false },
+      { host: '10', visible: false }
     ];
 
     function sort(profilesPromise) {
       return profilesPromise.then((profiles) => {
-        return profiles.sort((a, b) => parseInt(a.Host, 10) - parseInt(b.Host, 10));
+        return profiles.sort((a, b) => parseInt(a.host, 10) - parseInt(b.host, 10));
       });
     }
 
@@ -40,16 +40,16 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: '1', Visible: false } } },
-            { PutRequest: { Item: { Host: '2', Visible: false } } },
-            { PutRequest: { Item: { Host: '3', Visible: false } } },
-            { PutRequest: { Item: { Host: '4', Visible: false } } },
-            { PutRequest: { Item: { Host: '5', Visible: false } } },
-            { PutRequest: { Item: { Host: '6', Visible: false } } },
-            { PutRequest: { Item: { Host: '7', Visible: false } } },
-            { PutRequest: { Item: { Host: '8', Visible: false } } },
-            { PutRequest: { Item: { Host: '9', Visible: false } } },
-            { PutRequest: { Item: { Host: '10', Visible: false } } }
+            { PutRequest: { Item: { host: '1', visible: false } } },
+            { PutRequest: { Item: { host: '2', visible: false } } },
+            { PutRequest: { Item: { host: '3', visible: false } } },
+            { PutRequest: { Item: { host: '4', visible: false } } },
+            { PutRequest: { Item: { host: '5', visible: false } } },
+            { PutRequest: { Item: { host: '6', visible: false } } },
+            { PutRequest: { Item: { host: '7', visible: false } } },
+            { PutRequest: { Item: { host: '8', visible: false } } },
+            { PutRequest: { Item: { host: '9', visible: false } } },
+            { PutRequest: { Item: { host: '10', visible: false } } }
           ]
         }
       }).promise();
@@ -78,8 +78,8 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: '1', Visible: false } } },
-            { PutRequest: { Item: { Host: '2', Visible: false } } }
+            { PutRequest: { Item: { host: '1', visible: false } } },
+            { PutRequest: { Item: { host: '2', visible: false } } }
           ]
         }
       }).promise();
@@ -87,8 +87,8 @@ describe('dynamo', function() {
 
     it('works', async function() {
       await expect(dynamo.getProfileForHost('1')).to.eventually.deep.equal({
-        Host: '1',
-        Visible: false
+        host: '1',
+        visible: false
       });
     });
 
@@ -106,7 +106,7 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: '1', Visible: false } } }
+            { PutRequest: { Item: { host: '1', visible: false } } }
           ]
         }
       }).promise();
@@ -114,38 +114,38 @@ describe('dynamo', function() {
 
     it('works', async function() {
       await expect(dynamo.createHostProfile('2', {
-        Visible: true,
-        Something: 'else'
+        visible: true,
+        something: 'else'
       })).to.eventually.deep.equal({
-        Host: '2',
-        Visible: true,
-        Something: 'else'
+        host: '2',
+        visible: true,
+        something: 'else'
       });
 
       await expect(client.get({
         TableName: process.env.HOST_PROFILES_TABLE,
         Key: {
-          Host: '2'
+          host: '2'
         }
       }).promise()).to.eventually.deep.include({
         Item: {
-          Host: '2',
-          Visible: true,
-          Something: 'else'
+          host: '2',
+          visible: true,
+          something: 'else'
         }
       });
     });
 
     it('works with no attributes', async function() {
       expect(dynamo.createHostProfile('2', {})).to.eventually.deep.equal({
-        Host: '2'
+        host: '2'
       });
     });
 
     it('fails if the profile already exists', async function() {
       await expect(dynamo.createHostProfile('1', {
-        Visible: true,
-        Something: 'else'
+        visible: true,
+        something: 'else'
       })).to.eventually.be.null;
     });
   });
@@ -159,7 +159,7 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: '1', Visible: false } } }
+            { PutRequest: { Item: { host: '1', visible: false } } }
           ]
         }
       }).promise();
@@ -167,39 +167,39 @@ describe('dynamo', function() {
 
     it('works', async function() {
       await expect(dynamo.updateHostProfile('1', {
-        Visible: true,
-        Something: 'else'
+        visible: true,
+        something: 'else'
       })).to.eventually.deep.equal({
-        Host: '1',
-        Visible: true,
-        Something: 'else'
+        host: '1',
+        visible: true,
+        something: 'else'
       });
 
       await expect(client.get({
         TableName: process.env.HOST_PROFILES_TABLE,
         Key: {
-          Host: '1'
+          host: '1'
         }
       }).promise()).to.eventually.deep.include({
         Item: {
-          Host: '1',
-          Visible: true,
-          Something: 'else'
+          host: '1',
+          visible: true,
+          something: 'else'
         }
       });
     });
 
     it('works with no attributes', async function() {
       expect(dynamo.updateHostProfile('1', {})).to.eventually.deep.equal({
-        Host: '1',
-        Visible: false
+        host: '1',
+        visible: false
       });
     });
 
     it('fails if the profile does not exists', async function() {
       await expect(dynamo.updateHostProfile('2', {
-        Visible: true,
-        Something: 'else'
+        visible: true,
+        something: 'else'
       })).to.eventually.be.null;
     });
   });
@@ -213,7 +213,7 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.HOST_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Host: '1', Visible: false } } }
+            { PutRequest: { Item: { host: '1', visible: false } } }
           ]
         }
       }).promise();
@@ -243,16 +243,16 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: 'a', Email: 'resident1@gmail.com', Caseworker: '1' } } },
-            { PutRequest: { Item: { Id: 'b', Email: 'resident2@gmail.com', Caseworker: '1' } } },
-            { PutRequest: { Item: { Id: 'c', Email: 'resident3@gmail.com', Caseworker: '1' } } },
-            { PutRequest: { Item: { Id: 'd', Email: 'resident4@gmail.com', Caseworker: '1' } } },
-            { PutRequest: { Item: { Id: 'e', Email: 'resident5@gmail.com', Caseworker: '1' } } },
-            { PutRequest: { Item: { Id: 'f', Email: 'resident6@gmail.com', Caseworker: '1' } } },
-            { PutRequest: { Item: { Id: 'g', Email: 'resident7@gmail.com', Caseworker: '1' } } },
-            { PutRequest: { Item: { Id: 'h', Email: 'resident8@gmail.com', Caseworker: '1' } } },
-            { PutRequest: { Item: { Id: 'i', Email: 'resident9@gmail.com', Caseworker: '1' } } },
-            { PutRequest: { Item: { Id: 'j', Email: 'resident10@gmail.com', Caseworker: '1' } } }
+            { PutRequest: { Item: { id: 'a', email: 'resident1@gmail.com', caseworker: '1' } } },
+            { PutRequest: { Item: { id: 'b', email: 'resident2@gmail.com', caseworker: '1' } } },
+            { PutRequest: { Item: { id: 'c', email: 'resident3@gmail.com', caseworker: '1' } } },
+            { PutRequest: { Item: { id: 'd', email: 'resident4@gmail.com', caseworker: '1' } } },
+            { PutRequest: { Item: { id: 'e', email: 'resident5@gmail.com', caseworker: '1' } } },
+            { PutRequest: { Item: { id: 'f', email: 'resident6@gmail.com', caseworker: '1' } } },
+            { PutRequest: { Item: { id: 'g', email: 'resident7@gmail.com', caseworker: '1' } } },
+            { PutRequest: { Item: { id: 'h', email: 'resident8@gmail.com', caseworker: '1' } } },
+            { PutRequest: { Item: { id: 'i', email: 'resident9@gmail.com', caseworker: '1' } } },
+            { PutRequest: { Item: { id: 'j', email: 'resident10@gmail.com', caseworker: '1' } } }
           ]
         }
       }).promise();
@@ -276,21 +276,21 @@ describe('dynamo', function() {
 
   describe('getResidentProfiles()', function() {
     let expected = [
-      { Id: '1', Caseworker: 'a' },
-      { Id: '2', Caseworker: 'b' },
-      { Id: '3', Caseworker: 'c' },
-      { Id: '4', Caseworker: 'd' },
-      { Id: '5', Caseworker: 'e' },
-      { Id: '6', Caseworker: 'f' },
-      { Id: '7', Caseworker: 'g' },
-      { Id: '8', Caseworker: 'h' },
-      { Id: '9', Caseworker: 'i' },
-      { Id: '10', Caseworker: 'j' }
+      { id: '1', caseworker: 'a' },
+      { id: '2', caseworker: 'b' },
+      { id: '3', caseworker: 'c' },
+      { id: '4', caseworker: 'd' },
+      { id: '5', caseworker: 'e' },
+      { id: '6', caseworker: 'f' },
+      { id: '7', caseworker: 'g' },
+      { id: '8', caseworker: 'h' },
+      { id: '9', caseworker: 'i' },
+      { id: '10', caseworker: 'j' }
     ];
 
     function sort(profilesPromise) {
       return profilesPromise.then((profiles) => {
-        return profiles.sort((a, b) => parseInt(a.Id, 10) - parseInt(b.Id, 10));
+        return profiles.sort((a, b) => parseInt(a.id, 10) - parseInt(b.id, 10));
       });
     }
 
@@ -300,16 +300,16 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: '1', Caseworker: 'a' } } },
-            { PutRequest: { Item: { Id: '2', Caseworker: 'b' } } },
-            { PutRequest: { Item: { Id: '3', Caseworker: 'c' } } },
-            { PutRequest: { Item: { Id: '4', Caseworker: 'd' } } },
-            { PutRequest: { Item: { Id: '5', Caseworker: 'e' } } },
-            { PutRequest: { Item: { Id: '6', Caseworker: 'f' } } },
-            { PutRequest: { Item: { Id: '7', Caseworker: 'g' } } },
-            { PutRequest: { Item: { Id: '8', Caseworker: 'h' } } },
-            { PutRequest: { Item: { Id: '9', Caseworker: 'i' } } },
-            { PutRequest: { Item: { Id: '10', Caseworker: 'j' } } }
+            { PutRequest: { Item: { id: '1', caseworker: 'a' } } },
+            { PutRequest: { Item: { id: '2', caseworker: 'b' } } },
+            { PutRequest: { Item: { id: '3', caseworker: 'c' } } },
+            { PutRequest: { Item: { id: '4', caseworker: 'd' } } },
+            { PutRequest: { Item: { id: '5', caseworker: 'e' } } },
+            { PutRequest: { Item: { id: '6', caseworker: 'f' } } },
+            { PutRequest: { Item: { id: '7', caseworker: 'g' } } },
+            { PutRequest: { Item: { id: '8', caseworker: 'h' } } },
+            { PutRequest: { Item: { id: '9', caseworker: 'i' } } },
+            { PutRequest: { Item: { id: '10', caseworker: 'j' } } }
           ]
         }
       }).promise();
@@ -338,9 +338,9 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: '1', Caseworker: 'a' } } },
-            { PutRequest: { Item: { Id: '2', Caseworker: 'a' } } },
-            { PutRequest: { Item: { Id: '3', Caseworker: 'b' } } }
+            { PutRequest: { Item: { id: '1', caseworker: 'a' } } },
+            { PutRequest: { Item: { id: '2', caseworker: 'a' } } },
+            { PutRequest: { Item: { id: '3', caseworker: 'b' } } }
           ]
         }
       }).promise();
@@ -349,12 +349,12 @@ describe('dynamo', function() {
     it('works', async function() {
       await expect(dynamo.getProfilesForCaseworker('a')).to.eventually.deep.equal([
         {
-          Id: '1',
-          Caseworker: 'a'
+          id: '1',
+          caseworker: 'a'
         },
         {
-          Id: '2',
-          Caseworker: 'a'
+          id: '2',
+          caseworker: 'a'
         }
       ]);
     });
@@ -371,9 +371,9 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: '1', Caseworker: 'a' } } },
-            { PutRequest: { Item: { Id: '2', Caseworker: 'a' } } },
-            { PutRequest: { Item: { Id: '3', Caseworker: 'b' } } }
+            { PutRequest: { Item: { id: '1', caseworker: 'a' } } },
+            { PutRequest: { Item: { id: '2', caseworker: 'a' } } },
+            { PutRequest: { Item: { id: '3', caseworker: 'b' } } }
           ]
         }
       }).promise();
@@ -381,13 +381,13 @@ describe('dynamo', function() {
 
     it('works', async function() {
       await expect(dynamo.getProfileForCaseworker('a', '1')).to.eventually.deep.equal({
-        Id: '1',
-        Caseworker: 'a'
+        id: '1',
+        caseworker: 'a'
       });
 
       await expect(dynamo.getProfileForCaseworker('a', '2')).to.eventually.deep.equal({
-        Id: '2',
-        Caseworker: 'a'
+        id: '2',
+        caseworker: 'a'
       });
     });
 
@@ -413,7 +413,7 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: '1', Caseworker: 'a', Some: 'thing' } } }
+            { PutRequest: { Item: { id: '1', caseworker: 'a', some: 'thing' } } }
           ]
         }
       }).promise();
@@ -421,68 +421,68 @@ describe('dynamo', function() {
 
     it('can create a first profile for a caseworker', async function() {
       let profile = await dynamo.createResidentProfile('b', {
-        Something: 'else'
+        something: 'else'
       });
-      let { Id: id } = profile;
+      let { id: id } = profile;
 
       expect(id).to.be.ok;
       expect(profile).to.deep.equal({
-        Caseworker: 'b',
-        Id: id,
-        Something: 'else'
+        caseworker: 'b',
+        id,
+        something: 'else'
       });
 
       await expect(client.get({
         TableName: process.env.RESIDENT_PROFILES_TABLE,
         Key: {
-          Caseworker: 'b',
-          Id: id
+          caseworker: 'b',
+          id
         }
       }).promise()).to.eventually.deep.include({
         Item: {
-          Caseworker: 'b',
-          Id: id,
-          Something: 'else'
+          caseworker: 'b',
+          id,
+          something: 'else'
         }
       });
     });
 
     it('can create an additional profile for a caseworker', async function() {
       let profile = await dynamo.createResidentProfile('a', {
-        Something: 'else'
+        something: 'else'
       });
-      let { Id: id } = profile;
+      let { id: id } = profile;
 
       expect(id).to.be.ok;
       expect(profile).to.deep.equal({
-        Caseworker: 'a',
-        Id: id,
-        Something: 'else'
+        caseworker: 'a',
+        id,
+        something: 'else'
       });
 
       await expect(client.get({
         TableName: process.env.RESIDENT_PROFILES_TABLE,
         Key: {
-          Caseworker: 'a',
-          Id: id
+          caseworker: 'a',
+          id
         }
       }).promise()).to.eventually.deep.include({
         Item: {
-          Caseworker: 'a',
-          Id: id,
-          Something: 'else'
+          caseworker: 'a',
+          id,
+          something: 'else'
         }
       });
     });
 
     it('works with no attributes', async function() {
       let profile = await dynamo.createResidentProfile('b', {});
-      let { Id: id } = profile;
+      let { id: id } = profile;
 
       expect(id).to.be.ok;
       expect(profile).to.deep.equal({
-        Caseworker: 'b',
-        Id: id
+        caseworker: 'b',
+        id
       });
     });
   });
@@ -496,7 +496,7 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: '1', Caseworker: 'a', Some: 'thing' } } }
+            { PutRequest: { Item: { id: '1', caseworker: 'a', some: 'thing' } } }
           ]
         }
       }).promise();
@@ -504,43 +504,43 @@ describe('dynamo', function() {
 
     it('works', async function() {
       await expect(dynamo.updateResidentProfile('a', '1', {
-        Some: 'one',
-        Something: 'else'
+        some: 'one',
+        something: 'else'
       })).to.eventually.deep.equal({
-        Caseworker: 'a',
-        Id: '1',
-        Some: 'one',
-        Something: 'else'
+        caseworker: 'a',
+        id: '1',
+        some: 'one',
+        something: 'else'
       });
 
       await expect(client.get({
         TableName: process.env.RESIDENT_PROFILES_TABLE,
         Key: {
-          Caseworker: 'a',
-          Id: '1'
+          caseworker: 'a',
+          id: '1'
         }
       }).promise()).to.eventually.deep.include({
         Item: {
-          Caseworker: 'a',
-          Id: '1',
-          Some: 'one',
-          Something: 'else'
+          caseworker: 'a',
+          id: '1',
+          some: 'one',
+          something: 'else'
         }
       });
     });
 
     it('works with no attributes', async function() {
       expect(dynamo.updateResidentProfile('a', '1', {})).to.eventually.deep.equal({
-        Caseworker: 'a',
-        Id: '1',
-        Some: 'thing'
+        caseworker: 'a',
+        id: '1',
+        some: 'thing'
       });
     });
 
     it('fails if profile does not exist', async function() {
       await expect(dynamo.updateResidentProfile('a', '2', {
-        Some: 'one',
-        Something: 'else'
+        some: 'one',
+        something: 'else'
       })).to.eventually.be.null;
     });
   });
@@ -554,8 +554,8 @@ describe('dynamo', function() {
       await client.batchWrite({
         RequestItems: {
           [process.env.RESIDENT_PROFILES_TABLE]: [
-            { PutRequest: { Item: { Id: '1', Caseworker: 'a', Some: 'thing' } } },
-            { PutRequest: { Item: { Id: '2', Caseworker: 'a', Some: 'thingy' } } }
+            { PutRequest: { Item: { id: '1', caseworker: 'a', some: 'thing' } } },
+            { PutRequest: { Item: { id: '2', caseworker: 'a', Some: 'thingy' } } }
           ]
         }
       }).promise();

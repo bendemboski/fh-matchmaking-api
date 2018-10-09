@@ -142,12 +142,12 @@ resources:
     HostProfilesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:service}-host-profiles
+        TableName: ${self:service}-host-profiles2
         AttributeDefinitions:
-          - AttributeName: Host
+          - AttributeName: host
             AttributeType: S
         KeySchema:
-          - AttributeName: Host
+          - AttributeName: host
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 10
@@ -155,18 +155,18 @@ resources:
     ResidentProfilesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:service}-resident-profiles
+        TableName: ${self:service}-resident-profiles2
         AttributeDefinitions:
-          - AttributeName: Id
+          - AttributeName: id
             AttributeType: S
-          - AttributeName: Caseworker
+          - AttributeName: caseworker
             AttributeType: S
-          - AttributeName: MatchedHost
+          - AttributeName: matchedHost
             AttributeType: S
         KeySchema:
-          - AttributeName: Caseworker
+          - AttributeName: caseworker
             KeyType: HASH
-          - AttributeName: Id
+          - AttributeName: id
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 10
@@ -174,12 +174,12 @@ resources:
         GlobalSecondaryIndexes:
           - IndexName: matches
             KeySchema:
-              - AttributeName: MatchedHost
+              - AttributeName: matchedHost
                 KeyType: HASH
             Projection:
               NonKeyAttributes:
-                - FirstName
-                - LastName
+                - firstName
+                - lastName
               ProjectionType: INCLUDE
             ProvisionedThroughput:
               ReadCapacityUnits: 5

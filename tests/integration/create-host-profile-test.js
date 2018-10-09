@@ -57,12 +57,12 @@ describe('create host profile', function() {
     await expect(client.get({
       TableName: process.env.HOST_PROFILES_TABLE,
       Key: {
-        Host: hostId
+        host: hostId
       }
     }).promise()).to.eventually.deep.include({
       Item: {
-        Host: hostId,
-        Visible: true
+        host: hostId,
+        visible: true
       }
     });
   });
@@ -108,7 +108,7 @@ describe('create host profile', function() {
     await client.batchWrite({
       RequestItems: {
         [process.env.HOST_PROFILES_TABLE]: [
-          { PutRequest: { Item: { Host: hostId, Visible: false } } }
+          { PutRequest: { Item: { host: hostId, visible: false } } }
         ]
       }
     }).promise();
