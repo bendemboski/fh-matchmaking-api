@@ -2,11 +2,10 @@
   "name": "fh-matchmaking-api",
   "version": "1.0.0",
   "description": "Facing Homelessness Block Project Matchmaking API",
-  "main": "index.js",
+  "main": "app.js",
   "license": "MIT",
   "scripts": {
-    "test": "mocha --exit --require tests/test-helper.js tests/**/*-test.js",
-    "test-debug": "mocha --inspect-brk --exit --require tests/test-helper.js tests/**/*-test.js"
+    "test": "mocha --exit --require tests/test-helper.js tests/**/*-test.js"
   },
   "dependencies": {
     "aws-sdk": "^2.282.1",
