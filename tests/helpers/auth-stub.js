@@ -1,4 +1,4 @@
-const { cognito } = require('../../lib/aws');
+const { cognito } = require('../../src/aws');
 
 class AuthStub {
   stub(sandbox, userGroup, username) {

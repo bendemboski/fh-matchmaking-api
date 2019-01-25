@@ -1,6 +1,6 @@
 const { expect } = require('chai');
-const Cognito = require('../../lib/cognito');
-const env = require('../../lib/environment');
+const Cognito = require('../../src/cognito');
+const env = require('../../src/environment');
 const sinon = require('sinon');
 
 describe('cognito', function() {

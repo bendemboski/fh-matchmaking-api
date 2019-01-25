@@ -1,5 +1,5 @@
 const chai = require('chai');
-const buildApp = require('../../lib/build-app');
+const buildApp = require('../../src/build-app');
 
 const jsonApiContentType = 'application/vnd.api+json';
 

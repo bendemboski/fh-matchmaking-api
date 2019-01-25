@@ -1,4 +1,4 @@
-const aws = require('../../lib/aws');
+const aws = require('../../src/aws');
 
 class FakeCognitoProvider {
   constructor() {

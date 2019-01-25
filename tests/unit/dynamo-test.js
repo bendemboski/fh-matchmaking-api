@@ -1,9 +1,9 @@
 const { expect } = require('chai');
 const setupDynamo = require('../helpers/setup-dynamo');
 const sinon = require('sinon');
-const env = require('../../lib/environment');
+const env = require('../../src/environment');
 const AWS = require('aws-sdk');
-const Dynamo = require('../../lib/dynamo');
+const Dynamo = require('../../src/dynamo');
 
 describe('dynamo', function() {
   let service = setupDynamo();
