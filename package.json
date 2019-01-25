@@ -6,7 +6,9 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha --exit --require tests/test-helper.js tests/**/*-test.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "serve": "nodemon ./dev/serve.js",
+    "serve-inspect": "nodemon --inspect ./dev/serve.js"
   },
   "dependencies": {
     "aws-sdk": "^2.282.1",
@@ -29,6 +31,7 @@
     "eslint-plugin-node": "^7.0.1",
     "js-yaml": "^3.12.0",
     "mocha": "^5.2.0",
+    "nodemon": "^1.18.9",
     "serverless": "^1.29.1",
     "sinon": "^6.1.5",
     "sinon-chai": "^3.2.0"

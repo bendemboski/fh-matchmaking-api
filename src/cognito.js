@@ -6,7 +6,7 @@ class Cognito {
   constructor({ region, cognitoUserPoolId }) {
     this.region = region;
     this.userPoolId = cognitoUserPoolId;
-    this.provider = new AWS.CognitoIdentityServiceProvider();
+    this.provider = new AWS.CognitoIdentityServiceProvider({ region });
   }
 
   setupExpress(app) {
