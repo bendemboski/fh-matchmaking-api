@@ -36,6 +36,15 @@ function buildApp() {
     });
   }));
 
+  //
+  // Create a media upload URL
+  //
+  app.post('/mediaUpload', asyncHandler(async (req, res) => {
+    let { contentType } = req.body;
+    let { uploadUrl, downloadUrl } = await aws.s3.createUploadUrl({ contentType });
+    return res.status(201).json({ uploadUrl, downloadUrl });
+  }));
+
   // Log errors
   app.use(function(err, req, res, next) {
     console.error(err);

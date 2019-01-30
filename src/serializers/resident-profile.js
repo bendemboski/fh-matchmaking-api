@@ -35,6 +35,7 @@ class ResidentProfileSerializer extends BaseSerializer {
     return [
       'caseworker',
       'matchedHost',
+      'profilePic',
       'firstName',
       'lastName',
       'email',

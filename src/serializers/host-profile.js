@@ -34,6 +34,7 @@ class HostProfileSerializer extends BaseSerializer {
     return [
       'host',
       'visible',
+      'profilePic',
       'greeting',
       'birthdate',
       'gender',
@@ -54,6 +55,10 @@ class HostProfileSerializer extends BaseSerializer {
       'neighborhoodFeatures',
       'backyardActivities',
       'backyardDescription',
+      'photo1',
+      'photo2',
+      'photo3',
+      'photo4',
       'relationship',
       'interaction',
       'question'

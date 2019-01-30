@@ -32,6 +32,14 @@ provider:
         - Fn::GetAtt:
             - ResidentProfilesTable
             - Arn
+    - Effect: "Allow"
+      Action:
+        - "s3:GetObject"
+        - "s3:PutObject"
+      Resource:
+        Fn::GetAtt:
+          - MediaBucket
+          - Arn
 
 functions:
   app:
@@ -47,6 +55,8 @@ functions:
         Ref: HostProfilesTable
       RESIDENT_PROFILES_TABLE:
         Ref: ResidentProfilesTable
+      MEDIA_BUCKET:
+        Ref: MediaBucket
 
     events: # events trigger lambda functions
       - http: # this is an API Gateway HTTP event trigger
@@ -228,6 +238,17 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-media
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - Authorization
+                - Content-Type
+              AllowedMethods:
+                - GET
+                - PUT
+              MaxAge: 3000
 
   Outputs:
     UserPoolId:

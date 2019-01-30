@@ -19,6 +19,10 @@ class Environment {
   get residentProfilesTable() {
     return process.env.RESIDENT_PROFILES_TABLE;
   }
+
+  get mediaBucket() {
+    return process.env.MEDIA_BUCKET;
+  }
 }
 
 module.exports = new Environment();

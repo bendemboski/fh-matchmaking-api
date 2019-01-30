@@ -8,7 +8,8 @@ const [ , , stageName ] = process.argv;
 let {
   UserPoolId,
   HostProfilesTableName,
-  ResidentProfilesTableName
+  ResidentProfilesTableName,
+  MediaBucketName
 } = getStackOutputs(stageName);
 
 // Push them into the environment (including our hard-coded region, which we
@@ -17,7 +18,8 @@ Object.assign(process.env, {
   REGION: 'us-west-2',
   USER_POOL: UserPoolId,
   HOST_PROFILES_TABLE: HostProfilesTableName,
-  RESIDENT_PROFILES_TABLE: ResidentProfilesTableName
+  RESIDENT_PROFILES_TABLE: ResidentProfilesTableName,
+  MEDIA_BUCKET: MediaBucketName
 });
 
 // Now import and run buildApp(). It reads the environment at import time, so

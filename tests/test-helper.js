@@ -24,3 +24,4 @@ process.env.USER_POOL = 'userpool';
 process.env.DYNAMO_ENDPOINT = 'http://localhost:9191';
 process.env.HOST_PROFILES_TABLE = 'host-profiles';
 process.env.RESIDENT_PROFILES_TABLE = 'resident-profiles';
+process.env.MEDIA_BUCKET = 'media';
