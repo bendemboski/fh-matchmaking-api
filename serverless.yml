@@ -3,7 +3,7 @@ service: fh-matchmaking-api
 provider:
   name: aws
   runtime: nodejs8.10
-  stage: dev
+  stage: ${opt:stage, 'dev'}
   region: us-west-2
   profile: fh
   iamRoleStatements:
@@ -59,11 +59,27 @@ functions:
           cors: true
 
 resources:
+  Mappings:
+    DynamoCapacityMap:
+      # We have three stages where we want to provision capacity, but stay
+      # inside the 25/25 free tier limit. We just use 1 unit for dev/stage and
+      # the rest for prod. Each stage has two tables and 1 index, so
+      # (8 + 8 + 3) + (1 + 1 + 1) + (1 + 1 + 1) = 25
+      prod:
+        table: 8
+        index: 3
+      stage:
+        table: 1
+        index: 1
+      dev:
+        table: 1
+        index: 1
+
   Resources:
     UserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: ${self:service}-user-pool
+        UserPoolName: ${self:service}-${self:provider.stage}-user-pool
         AdminCreateUserConfig:
           AllowAdminCreateUserOnly: true
           UnusedAccountValidityDays: 365
@@ -127,14 +143,14 @@ resources:
       Properties:
         DesiredDeliveryMediums:
           - EMAIL
-        Username: bendemboski@gmail.com
+        Username: bendemboski+admin@gmail.com
         UserAttributes:
           - Name: given_name
             Value: Ben
           - Name: family_name
             Value: Demboski
           - Name: email
-            Value: bendemboski@gmail.com
+            Value: bendemboski+admin@gmail.com
           - Name: email_verified
             Value: false
         UserPoolId:
@@ -142,7 +158,7 @@ resources:
     HostProfilesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:service}-host-profiles2
+        TableName: ${self:service}-${self:provider.stage}-host-profiles
         AttributeDefinitions:
           - AttributeName: host
             AttributeType: S
@@ -150,12 +166,20 @@ resources:
           - AttributeName: host
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 5
+          ReadCapacityUnits:
+            Fn::FindInMap:
+              - DynamoCapacityMap
+              - ${self:provider.stage}
+              - table
+          WriteCapacityUnits:
+            Fn::FindInMap:
+              - DynamoCapacityMap
+              - ${self:provider.stage}
+              - table
     ResidentProfilesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:service}-resident-profiles2
+        TableName: ${self:service}-${self:provider.stage}-resident-profiles
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -169,8 +193,16 @@ resources:
           - AttributeName: id
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 5
+          ReadCapacityUnits:
+            Fn::FindInMap:
+              - DynamoCapacityMap
+              - ${self:provider.stage}
+              - table
+          WriteCapacityUnits:
+            Fn::FindInMap:
+              - DynamoCapacityMap
+              - ${self:provider.stage}
+              - table
         GlobalSecondaryIndexes:
           - IndexName: matches
             KeySchema:
@@ -182,36 +214,44 @@ resources:
                 - lastName
               ProjectionType: INCLUDE
             ProvisionedThroughput:
-              ReadCapacityUnits: 5
-              WriteCapacityUnits: 5
+              ReadCapacityUnits:
+                Fn::FindInMap:
+                  - DynamoCapacityMap
+                  - ${self:provider.stage}
+                  - index
+              WriteCapacityUnits:
+                Fn::FindInMap:
+                  - DynamoCapacityMap
+                  - ${self:provider.stage}
+                  - index
     MediaBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:service}-media
+        BucketName: ${self:service}-${self:provider.stage}-media
 
   Outputs:
     UserPoolId:
       Value:
         Ref: UserPool
       Export:
-        Name: "UserPool::Id"
+        Name: "${self:provider.stage}::UserPool::Id"
     UserPoolClientId:
       Value:
         Ref: UserPoolClient
       Export:
-        Name: "UserPoolClient::Id"
+        Name: "${self:provider.stage}::UserPoolClient::Id"
     HostProfilesTableName:
       Value:
         Ref: HostProfilesTable
       Export:
-        Name: "HostProfilesTable::Name"
+        Name: "${self:provider.stage}::HostProfilesTable::Name"
     ResidentProfilesTableName:
       Value:
         Ref: ResidentProfilesTable
       Export:
-        Name: "ResidentProfilesTable::Name"
+        Name: "${self:provider.stage}::ResidentProfilesTable::Name"
     MediaBucketName:
       Value:
         Ref: MediaBucket
       Export:
-        Name: "MediaBucket::Name"
+        Name: "${self:provider.stage}::MediaBucket::Name"

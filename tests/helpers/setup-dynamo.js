@@ -32,6 +32,12 @@ module.exports = function setupDynamo() {
     hostTable.TableName = 'host-profiles';
     residentTable.TableName = 'resident-profiles';
 
+    // provisioned throughput is computed, so we need to set it directly
+    const throughput = { ReadCapacityUnits: 1, WriteCapacityUnits: 1 };
+    hostTable.ProvisionedThroughput = throughput;
+    residentTable.ProvisionedThroughput = throughput;
+    residentTable.GlobalSecondaryIndexes[0].ProvisionedThroughput = throughput;
+
     await dynamodb.createTable(hostTable).promise();
     await dynamodb.createTable(residentTable).promise();
   });
