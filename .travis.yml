@@ -1,0 +1,14 @@
+language: node_js
+node_js: '8.10'
+cache: yarn
+
+script:
+  - yarn lint
+  - yarn test
+
+deploy:
+  provider: script
+  script: ci/deploy.sh -s stage 2>&1
+  skip_cleanup: true
+  on:
+    branch: master
