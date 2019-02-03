@@ -7,8 +7,8 @@
   "scripts": {
     "test": "mocha --exit --require tests/test-helper.js tests/**/*-test.js",
     "lint": "eslint .",
-    "serve": "nodemon ./dev/serve.js",
-    "serve-inspect": "nodemon --inspect ./dev/serve.js",
+    "serve": "AWS_PROFILE=fh nodemon ./dev/serve.js",
+    "serve-inspect": "AWS_PROFILE=fh nodemon --inspect ./dev/serve.js",
     "deploy": "sls deploy"
   },
   "dependencies": {
