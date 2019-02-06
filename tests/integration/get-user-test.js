@@ -14,6 +14,7 @@ describe('get user', function() {
   let caseworkerId;
 
   beforeEach(function() {
+    provider.testCreationTime = new Date();
     provider.testAddUsers({
       admins: [
         { 'given_name': 'Buster', 'family_name': 'Bluth', email: 'heybrother@bluth.com' }
@@ -41,9 +42,12 @@ describe('get user', function() {
   });
 
   it('serialization', async function() {
+    let creationTime = new Date();
+
     provider.testAddUsers({
       admins: [
         {
+          'creation_time': creationTime,
           'given_name': 'Maeby',
           'family_name': 'Funke',
           'email': 'maeby@bluth.com',
@@ -63,6 +67,7 @@ describe('get user', function() {
         type: 'admins',
         id,
         attributes: {
+          creationTime: creationTime.toISOString(),
           email: 'maeby@bluth.com',
           givenName: 'Maeby',
           familyName: 'Funke',
@@ -86,6 +91,7 @@ describe('get user', function() {
           type: 'admins',
           id: adminId,
           attributes: {
+            creationTime: provider.testCreationTime.toISOString(),
             email: 'heybrother@bluth.com',
             givenName: 'Buster',
             familyName: 'Bluth'
@@ -102,6 +108,7 @@ describe('get user', function() {
           type: 'hosts',
           id: hostId,
           attributes: {
+            creationTime: provider.testCreationTime.toISOString(),
             email: 'lessonteacher@gmail.com',
             givenName: 'Jay',
             familyName: 'Walter-Weatherman'
@@ -120,6 +127,7 @@ describe('get user', function() {
           type: 'caseworkers',
           id: caseworkerId,
           attributes: {
+            creationTime: provider.testCreationTime.toISOString(),
             email: 'funnyorsomething@gmail.com',
             givenName: 'Ann',
             familyName: 'Veal'
@@ -252,6 +260,7 @@ describe('get user', function() {
           type: 'hosts',
           id: hostId,
           attributes: {
+            creationTime: provider.testCreationTime.toISOString(),
             givenName: 'Jay',
             familyName: 'Walter-Weatherman'
           }
@@ -277,6 +286,7 @@ describe('get user', function() {
           type: 'caseworkers',
           id: caseworkerId,
           attributes: {
+            creationTime: provider.testCreationTime.toISOString(),
             email: 'funnyorsomething@gmail.com',
             givenName: 'Ann',
             familyName: 'Veal'
@@ -367,6 +377,7 @@ describe('get user', function() {
           type: 'hosts',
           id: hostId,
           attributes: {
+            creationTime: provider.testCreationTime.toISOString(),
             email: 'lessonteacher@gmail.com',
             givenName: 'Jay',
             familyName: 'Walter-Weatherman'

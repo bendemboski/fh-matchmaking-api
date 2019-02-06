@@ -15,6 +15,7 @@ class ResidentProfileSerializer extends BaseSerializer {
     let { id, attributes } = ResidentProfileSerializer;
     delete hash[id];
     delete hash.caseworker;
+    delete hash.creationTime;
     Object.keys(hash).forEach((key) => {
       if (!attributes.includes(key)) {
         delete hash[key];
@@ -33,6 +34,7 @@ class ResidentProfileSerializer extends BaseSerializer {
 
   static get attributes() {
     return [
+      'creationTime',
       'caseworker',
       'matchedHost',
       'profilePic',

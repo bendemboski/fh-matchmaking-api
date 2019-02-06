@@ -32,23 +32,28 @@ describe('update resident profile', function() {
     sinon.restore();
   });
 
-  async function createProfile(caseworker, id) {
+  async function createProfile(caseworker, id, creationTime = new Date()) {
     await client.update({
       TableName: process.env.RESIDENT_PROFILES_TABLE,
       Key: {
         caseworker,
         id
-      }
+      },
+      UpdateExpression: 'set #k = :v',
+      ExpressionAttributeNames: { '#k': 'creationTime' },
+      ExpressionAttributeValues: { ':v': creationTime.toISOString() }
     }).promise();
   }
 
-  it('works and ignores unknown attributes', async function() {
-    await createProfile(caseworkerId, 'a');
+  it('works and ignores unknown/read-only attributes', async function() {
+    let date = new Date(2019, 1, 15);
+    await createProfile(caseworkerId, 'a', date);
 
     let res = await factory.patch(`/resident-profiles/a`, {
       data: {
         type: 'resident-profiles',
         attributes: {
+          creationTime: new Date().toISOString(),
           matchedHost: 'ahost',
           unknown: 'value'
         }
@@ -61,6 +66,7 @@ describe('update resident profile', function() {
         type: 'resident-profiles',
         id: 'a',
         attributes: {
+          creationTime: date.toISOString(),
           caseworker: caseworkerId,
           matchedHost: 'ahost'
         }
@@ -77,6 +83,7 @@ describe('update resident profile', function() {
       Item: {
         caseworker: caseworkerId,
         id: 'a',
+        creationTime: date.toISOString(),
         matchedHost: 'ahost'
       }
     });

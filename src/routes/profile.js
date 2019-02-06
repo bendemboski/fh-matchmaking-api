@@ -70,6 +70,7 @@ function buildProfileRoutes(app) {
 
     let username = aws.cognito.getAuthUsername(res);
     let hash = await residentProfileSerializer.deserialize(req.body);
+    hash.creationTime = new Date().toISOString();
     let profile = await aws.dynamo.createResidentProfile(username, hash);
     return res.status(201).json(residentProfileSerializer.serialize(profile));
   }));

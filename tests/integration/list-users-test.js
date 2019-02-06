@@ -11,6 +11,7 @@ describe('list users', function() {
   let provider = setupCognito();
 
   beforeEach(function() {
+    provider.testCreationTime = new Date();
     provider.testAddUsers({
       admins: [
         { 'given_name': 'Buster', 'family_name': 'Bluth', email: 'heybrother@bluth.com' }
@@ -49,6 +50,7 @@ describe('list users', function() {
             type: 'admins',
             id,
             attributes: {
+              creationTime: provider.testCreationTime.toISOString(),
               email: 'heybrother@bluth.com',
               givenName: 'Buster',
               familyName: 'Bluth'
@@ -73,6 +75,7 @@ describe('list users', function() {
             type: 'hosts',
             id: id1,
             attributes: {
+              creationTime: provider.testCreationTime.toISOString(),
               email: 'lessonteacher@gmail.com',
               givenName: 'Jay',
               familyName: 'Walter-Weatherman'
@@ -82,6 +85,7 @@ describe('list users', function() {
             type: 'hosts',
             id: id2,
             attributes: {
+              creationTime: provider.testCreationTime.toISOString(),
               email: 'hospitalbar@bluth.com',
               givenName: 'Lucille',
               familyName: 'Bluth'
@@ -111,6 +115,7 @@ describe('list users', function() {
             type: 'caseworkers',
             id: id1,
             attributes: {
+              creationTime: provider.testCreationTime.toISOString(),
               email: 'funnyorsomething@gmail.com',
               givenName: 'Ann',
               familyName: 'Veal'
@@ -120,6 +125,7 @@ describe('list users', function() {
             type: 'caseworkers',
             id: id2,
             attributes: {
+              creationTime: provider.testCreationTime.toISOString(),
               email: 'illusions@bluth.com',
               givenName: 'Gob',
               familyName: 'Bluth'
@@ -129,6 +135,7 @@ describe('list users', function() {
             type: 'caseworkers',
             id: id3,
             attributes: {
+              creationTime: provider.testCreationTime.toISOString(),
               email: 'imgene@parmesan.com',
               givenName: 'Gene',
               familyName: 'Parmesan'
@@ -259,6 +266,7 @@ describe('list users', function() {
             type: 'hosts',
             id: id1,
             attributes: {
+              creationTime: provider.testCreationTime.toISOString(),
               givenName: 'Jay',
               familyName: 'Walter-Weatherman'
             }
@@ -267,6 +275,7 @@ describe('list users', function() {
             type: 'hosts',
             id: id2,
             attributes: {
+              creationTime: provider.testCreationTime.toISOString(),
               givenName: 'Lucille',
               familyName: 'Bluth'
             }

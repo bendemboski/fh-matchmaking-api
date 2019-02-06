@@ -17,7 +17,7 @@ class FakeCognitoProvider {
 
   adminCreateUser({ UserAttributes: attributes }) {
     let username = this._username();
-    this.users[username] = attributes;
+    this.users[username] = { attributes, creationTime: this.testCreationTime || new Date() };
     return promise({ User: this.buildUser(username) });
   }
 
@@ -31,11 +31,11 @@ class FakeCognitoProvider {
     }
 
     attributes.forEach((attr) => {
-      let old = user.find(({ Name: name }) => name === attr.Name);
+      let old = user.attributes.find(({ Name: name }) => name === attr.Name);
       if (old) {
         old.Value = attr.Value;
       } else {
-        user.push(attr);
+        user.attributes.push(attr);
       }
     });
 
@@ -74,9 +74,16 @@ class FakeCognitoProvider {
     Object.keys(usersByGroup).forEach((group) => {
       usersByGroup[group].forEach((attributes) => {
         let username = this._username();
-        this.users[username] = Object.keys(attributes).map((name) => {
-          return { Name: name, Value: attributes[name] };
-        });
+
+        let creationTime = attributes.creation_time || this.testCreationTime || new Date();
+        delete attributes.creation_time;
+
+        this.users[username] = {
+          attributes: Object.keys(attributes).map((name) => {
+            return { Name: name, Value: attributes[name] };
+          }),
+          creationTime
+        };
         this.groups[group].push(username);
       });
     });
@@ -84,9 +91,11 @@ class FakeCognitoProvider {
 
   testGetUsers() {
     return Object.keys(this.users).map((username) => {
+      let { attributes, creationTime } = this.users[username];
       return {
         username,
-        attributes: this.users[username],
+        attributes,
+        creationTime,
         group: this._group(username)
       };
     });
@@ -97,9 +106,12 @@ class FakeCognitoProvider {
       throw new Error(`User not found: ${username}`);
     }
 
+    let { attributes, creationTime } = this.users[username];
+
     return {
       Username: username,
-      [attributesKey]: this.users[username]
+      [attributesKey]: attributes,
+      UserCreateDate: creationTime
     };
   }
 

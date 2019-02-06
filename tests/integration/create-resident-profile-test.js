@@ -30,6 +30,9 @@ describe('create resident profile', function() {
   });
 
   it('works and ignores unknown attributes', async function() {
+    let date = new Date(2019, 1, 15);
+    sinon.useFakeTimers(date);
+
     let res = await factory.post(`/resident-profiles`, {
       data: {
         type: 'resident-profiles',
@@ -48,6 +51,7 @@ describe('create resident profile', function() {
         type: 'resident-profiles',
         id,
         attributes: {
+          creationTime: date.toISOString(),
           caseworker: caseworkerId,
           matchedHost: 'ahost'
         }
@@ -62,6 +66,7 @@ describe('create resident profile', function() {
       }
     }).promise()).to.eventually.deep.include({
       Item: {
+        creationTime: date.toISOString(),
         caseworker: caseworkerId,
         id,
         matchedHost: 'ahost'
@@ -78,12 +83,16 @@ describe('create resident profile', function() {
     expect(res).to.have.status(201);
   });
 
-  it('ignores caseworker and id, if specified', async function() {
+  it('ignores creationTime, caseworker, and id, if specified', async function() {
+    let date = new Date(2019, 1, 15);
+    sinon.useFakeTimers(date);
+
     let res = await factory.post(`/resident-profiles`, {
       data: {
         type: 'resident-profiles',
         id: 'something',
         attributes: {
+          creationTime: new Date().toISOString(),
           caseworker: 'somecw',
           id: 'something',
           matchedHost: 'ahost'
@@ -99,6 +108,7 @@ describe('create resident profile', function() {
         type: 'resident-profiles',
         id,
         attributes: {
+          creationTime: date.toISOString(),
           caseworker: caseworkerId,
           matchedHost: 'ahost'
         }

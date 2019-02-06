@@ -25,6 +25,8 @@ describe('create user', function() {
       let postData;
 
       beforeEach(function() {
+        provider.testCreationTime = new Date();
+
         postData = {
           data: {
             type,
@@ -103,6 +105,7 @@ describe('create user', function() {
             type: `${type}s`,
             id,
             attributes: {
+              creationTime: provider.testCreationTime.toISOString(),
               email: 'user@domain.com',
               givenName: 'Person',
               familyName: 'McHuman'

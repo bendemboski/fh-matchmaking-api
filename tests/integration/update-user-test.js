@@ -100,7 +100,7 @@ describe('update user', function() {
       });
       expect(res).to.have.status(204);
 
-      expect(sort(provider.users[adminId])).to.deep.equal(sort([
+      expect(sort(provider.users[adminId].attributes)).to.deep.equal(sort([
         {
           Name: 'email',
           Value: 'thale@gmail.com'
@@ -137,7 +137,7 @@ describe('update user', function() {
       });
       expect(res).to.have.status(204);
 
-      expect(sort(provider.users[adminId])).to.deep.equal(sort([
+      expect(sort(provider.users[adminId].attributes)).to.deep.equal(sort([
         {
           Name: 'email',
           Value: 'heybrother@bluth.com'
