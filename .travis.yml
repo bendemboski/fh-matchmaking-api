@@ -8,7 +8,7 @@ script:
 
 deploy:
   provider: script
-  script: ci/deploy.sh -s stage 2>&1
+  script: ci/deploy.sh 2>&1
   skip_cleanup: true
   on:
     branch: master
