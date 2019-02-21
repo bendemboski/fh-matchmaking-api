@@ -6,51 +6,35 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: us-west-2
   profile: fh
-  iamRoleStatements:
-    - Effect: "Allow"
+  stackPolicy:
+    - Effect: Allow
+      Principal: "*"
+      Action: "Update:*"
+      Resource: "*"
+    - Effect: Deny
+      Principal: "*"
       Action:
-        - "cognito-idp:AdminCreateUser"
-        - "cognito-idp:AdminAddUserToGroup"
-        - "cognito-idp:ListUsersInGroup"
-        - "cognito-idp:AdminGetUser"
-        - "cognito-idp:AdminListGroupsForUser"
-        - "cognito-idp:AdminUpdateUserAttributes"
-      Resource:
-        Fn::GetAtt:
-          - UserPool
-          - Arn
-    - Effect: "Allow"
-      Action:
-        - "dynamodb:Scan"
-        - "dynamodb:Query"
-        - "dynamodb:GetItem"
-        - "dynamoDb:UpdateItem"
-      Resource:
-        - Fn::GetAtt:
-            - HostProfilesTable
-            - Arn
-        - Fn::GetAtt:
-            - ResidentProfilesTable
-            - Arn
-    - Effect: "Allow"
-      Action:
-        - "s3:GetObject"
-        - "s3:PutObject"
-        - "s3:PutObjectAcl"
-      Resource:
-        Fn::Join:
-          - ''
-          - - Fn::GetAtt:
-              - MediaBucket
-              - Arn
-            - '/*'
+        - Update:Replace
+        - Update:Delete
+      Resource: "*"
+      Condition:
+        StringEquals:
+          ResourceType:
+            - AWS::Cognito::UserPool
+            - AWS::Cognito::UserPoolGroup
+            - AWS::Cognito::UserPoolClient
+            - AWS::DynamoDB::Table
+            - AWS::S3::Bucket
+
+plugins:
+  - serverless-iam-roles-per-function
 
 functions:
   app:
     handler: app.server # reference the file and exported method
     environment:
       USER_POOL:
-        Ref: UserPool
+        Ref: CognitoUserPoolUserPool
       USER_POOL_CLIENT:
         Ref: UserPoolClient
       REGION:
@@ -60,8 +44,7 @@ functions:
       RESIDENT_PROFILES_TABLE:
         Ref: ResidentProfilesTable
       MEDIA_BUCKET:
-        Ref: MediaBucket
-
+        Ref: S3BucketMediaBucket
     events: # events trigger lambda functions
       - http: # this is an API Gateway HTTP event trigger
           path: /
@@ -71,6 +54,52 @@ functions:
           path: /{proxy+}
           method: ANY
           cors: true
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "cognito-idp:AdminCreateUser"
+          - "cognito-idp:AdminAddUserToGroup"
+          - "cognito-idp:ListUsersInGroup"
+          - "cognito-idp:AdminGetUser"
+          - "cognito-idp:AdminListGroupsForUser"
+          - "cognito-idp:AdminUpdateUserAttributes"
+        Resource:
+          Fn::GetAtt:
+            - CognitoUserPoolUserPool
+            - Arn
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:Scan"
+          - "dynamodb:Query"
+          - "dynamodb:GetItem"
+          - "dynamoDb:UpdateItem"
+        Resource:
+          - Fn::GetAtt:
+              - HostProfilesTable
+              - Arn
+          - Fn::GetAtt:
+              - ResidentProfilesTable
+              - Arn
+      - Effect: "Allow"
+        Action:
+          - "s3:GetObject"
+          - "s3:PutObject"
+          - "s3:PutObjectAcl"
+        Resource:
+          Fn::Join:
+            - ''
+            - - Fn::GetAtt:
+                - S3BucketMediaBucket
+                - Arn
+              - '/*'
+  customMessage:
+    environment:
+      STAGE: ${self:provider.stage}
+    handler: events.cognitoMessage
+    events:
+      - cognitoUserPool:
+          pool: UserPool
+          trigger: CustomMessage
 
 resources:
   Mappings:
@@ -90,7 +119,7 @@ resources:
         index: 1
 
   Resources:
-    UserPool:
+    CognitoUserPoolUserPool:
       Type: AWS::Cognito::UserPool
       Properties:
         UserPoolName: ${self:service}-${self:provider.stage}-user-pool
@@ -130,28 +159,28 @@ resources:
         Description: Admin users
         GroupName: admins
         UserPoolId:
-          Ref: UserPool
+          Ref: CognitoUserPoolUserPool
     UserPoolHostGroup:
       Type: AWS::Cognito::UserPoolGroup
       Properties:
         Description: Host users
         GroupName: hosts
         UserPoolId:
-          Ref: UserPool
+          Ref: CognitoUserPoolUserPool
     UserPoolCaseworkerGroup:
       Type: AWS::Cognito::UserPoolGroup
       Properties:
         Description: Caseworker users
         GroupName: caseworkers
         UserPoolId:
-          Ref: UserPool
+          Ref: CognitoUserPoolUserPool
     UserPoolClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
         ClientName: ${self:service}-client
         GenerateSecret: false
         UserPoolId:
-          Ref: UserPool
+          Ref: CognitoUserPoolUserPool
     AdminUser:
       Type: AWS::Cognito::UserPoolUser
       Properties:
@@ -168,7 +197,7 @@ resources:
           - Name: email_verified
             Value: false
         UserPoolId:
-          Ref: UserPool
+          Ref: CognitoUserPoolUserPool
     HostProfilesTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -238,7 +267,7 @@ resources:
                   - DynamoCapacityMap
                   - ${self:provider.stage}
                   - index
-    MediaBucket:
+    S3BucketMediaBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-media
@@ -257,7 +286,7 @@ resources:
   Outputs:
     UserPoolId:
       Value:
-        Ref: UserPool
+        Ref: CognitoUserPoolUserPool
       Export:
         Name: "${self:provider.stage}::UserPool::Id"
     UserPoolClientId:
@@ -277,6 +306,6 @@ resources:
         Name: "${self:provider.stage}::ResidentProfilesTable::Name"
     MediaBucketName:
       Value:
-        Ref: MediaBucket
+        Ref: S3BucketMediaBucket
       Export:
         Name: "${self:provider.stage}::MediaBucket::Name"
