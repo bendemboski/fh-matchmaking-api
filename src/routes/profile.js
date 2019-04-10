@@ -80,10 +80,14 @@ function buildProfileRoutes(app) {
       return res.status(403).send();
     }
 
-    let username = aws.cognito.getAuthUsername(res);
     let { params: { id } } = req;
+    let [ username, dynamoId ] = id.split(':');
+    if (username !== aws.cognito.getAuthUsername(res)) {
+      return res.status(404).send();
+    }
+
     let hash = await residentProfileSerializer.deserialize(req.body);
-    let profile = await aws.dynamo.updateResidentProfile(username, id, hash);
+    let profile = await aws.dynamo.updateResidentProfile(username, dynamoId, hash);
 
     if (profile) {
       return res.status(200).json(residentProfileSerializer.serialize(profile));
@@ -93,14 +97,20 @@ function buildProfileRoutes(app) {
   }));
 
   app.delete('/resident-profiles/:id', asyncHandler(async (req, res) => {
-    if (!aws.cognito.isCaseworker(res)) {
+    if (aws.cognito.isHost(res)) {
       return res.status(403).send();
     }
 
-    let username = aws.cognito.getAuthUsername(res);
     let { params: { id } } = req;
+    let [ username, dynamoId ] = id.split(':');
 
-    let wasFound = await aws.dynamo.deleteResidentProfile(username, id);
+    if (aws.cognito.isCaseworker(res)) {
+      if (username !== aws.cognito.getAuthUsername(res)) {
+        return res.status(404).send();
+      }
+    }
+
+    let wasFound = await aws.dynamo.deleteResidentProfile(username, dynamoId);
     if (wasFound) {
       return res.status(204).send();
     } else {

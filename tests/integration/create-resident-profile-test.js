@@ -58,17 +58,18 @@ describe('create resident profile', function() {
       }
     });
 
+    let [ , dbId ] = id.split(':');
     await expect(client.get({
       TableName: process.env.RESIDENT_PROFILES_TABLE,
       Key: {
         caseworker: caseworkerId,
-        id
+        id: dbId
       }
     }).promise()).to.eventually.deep.include({
       Item: {
         creationTime: date.toISOString(),
         caseworker: caseworkerId,
-        id,
+        id: dbId,
         matchedHost: 'ahost'
       }
     });

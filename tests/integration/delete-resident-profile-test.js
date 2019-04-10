@@ -42,42 +42,94 @@ describe('delete resident profile', function() {
     }).promise();
   }
 
-  it('works', async function() {
-    await createProfile(caseworkerId, 'a');
+  describe('host', function() {
+    beforeEach(function() {
+      authStub.setUserGroup('hosts');
+    });
 
-    let res = await factory.delete(`/resident-profiles/a`);
-    expect(res).to.have.status(204);
+    it('fails', async function() {
+      await createProfile(caseworkerId, 'a');
 
-    await expect(client.scan({
-      TableName: process.env.RESIDENT_PROFILES_TABLE
-    }).promise()).to.eventually.have.property('Count', 0);
+      let res = await factory.delete(`/resident-profiles/${caseworkerId}:a`);
+      expect(res).to.have.status(403);
+
+      await expect(client.scan({
+        TableName: process.env.RESIDENT_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 1);
+    });
   });
 
-  it('fails if the user is not a caseworker', async function() {
-    await createProfile(caseworkerId, 'a');
-    authStub.setUserGroup('hosts');
+  describe('caseworker', function() {
+    beforeEach(function() {
+      authStub.setUserGroup('caseworkers');
+    });
 
-    let res = await factory.delete(`/resident-profiles/a`);
-    expect(res).to.have.status(403);
+    it('works', async function() {
+      await createProfile(caseworkerId, 'a');
 
-    await expect(client.scan({
-      TableName: process.env.RESIDENT_PROFILES_TABLE
-    }).promise()).to.eventually.have.property('Count', 1);
+      let res = await factory.delete(`/resident-profiles/${caseworkerId}:a`);
+      expect(res).to.have.status(204);
+
+      await expect(client.scan({
+        TableName: process.env.RESIDENT_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 0);
+    });
+
+    it('fails if the profile does not exist', async function() {
+      let res = await factory.delete(`/resident-profiles/${caseworkerId}:a`);
+      expect(res).to.have.status(404);
+    });
+
+    it('fails if the profile is owned by a different caseworker', async function() {
+      await createProfile(otherCaseworkerId, 'a');
+
+      let res = await factory.delete(`/resident-profiles/${otherCaseworkerId}:a`);
+      expect(res).to.have.status(404);
+
+      await expect(client.scan({
+        TableName: process.env.RESIDENT_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 1);
+    });
+
+    it('fails if the caseworker portion of the id is wrong', async function() {
+      await createProfile(otherCaseworkerId, 'a');
+
+      let res = await factory.delete(`/resident-profiles/${caseworkerId}:a`);
+      expect(res).to.have.status(404);
+
+      await expect(client.scan({
+        TableName: process.env.RESIDENT_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 1);
+    });
   });
 
-  it('fails if the profile does not exist', async function() {
-    let res = await factory.delete(`/resident-profiles/a`);
-    expect(res).to.have.status(404);
+  describe('admin', function() {
+    it('works', async function() {
+      await createProfile(caseworkerId, 'a');
+
+      let res = await factory.delete(`/resident-profiles/${caseworkerId}:a`);
+      expect(res).to.have.status(204);
+
+      await expect(client.scan({
+        TableName: process.env.RESIDENT_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 0);
+    });
+
+    it('fails if the profile does not exist', async function() {
+      let res = await factory.delete(`/resident-profiles/${caseworkerId}:a`);
+      expect(res).to.have.status(404);
+    });
+
+    it('fails if the caseworker portion of the id is wrong', async function() {
+      await createProfile(otherCaseworkerId, 'a');
+
+      let res = await factory.delete(`/resident-profiles/${caseworkerId}:a`);
+      expect(res).to.have.status(404);
+
+      await expect(client.scan({
+        TableName: process.env.RESIDENT_PROFILES_TABLE
+      }).promise()).to.eventually.have.property('Count', 1);
+    });
   });
 
-  it('fails if the profile is owner by a different caseworker', async function() {
-    await createProfile(otherCaseworkerId, 'a');
-
-    let res = await factory.delete(`/resident-profiles/a`);
-    expect(res).to.have.status(404);
-
-    await expect(client.scan({
-      TableName: process.env.RESIDENT_PROFILES_TABLE
-    }).promise()).to.eventually.have.property('Count', 1);
-  });
 });

@@ -185,15 +185,15 @@ describe('get user', function() {
       expect(res.body.data.relationships).to.deep.equal({
         residents: {
           data: [
-            { type: 'resident-profiles', id: '1' },
-            { type: 'resident-profiles', id: '2' }
+            { type: 'resident-profiles', id: `${caseworkerId}:1` },
+            { type: 'resident-profiles', id: `${caseworkerId}:2` }
           ]
         }
       });
       expect(res.body.included).to.deep.equal([
         {
           type: 'resident-profiles',
-          id: '1',
+          id: `${caseworkerId}:1`,
           attributes: {
             caseworker: caseworkerId,
             email: 'steveholt@gmail.com'
@@ -201,7 +201,7 @@ describe('get user', function() {
         },
         {
           type: 'resident-profiles',
-          id: '2',
+          id: `${caseworkerId}:2`,
           attributes: {
             caseworker: caseworkerId,
             email: 'oscar@bluth.com'
@@ -294,7 +294,7 @@ describe('get user', function() {
           relationships: {
             residents: {
               data: [
-                { type: 'resident-profiles', id: '1' }
+                { type: 'resident-profiles', id: `${caseworkerId}:1` }
               ]
             }
           }
@@ -302,7 +302,7 @@ describe('get user', function() {
         included: [
           {
             type: 'resident-profiles',
-            id: '1',
+            id: `${caseworkerId}:1`,
             attributes: {
               caseworker: caseworkerId,
               email: 'steveholt@gmail.com'

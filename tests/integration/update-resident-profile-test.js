@@ -49,7 +49,7 @@ describe('update resident profile', function() {
     let date = new Date(2019, 1, 15);
     await createProfile(caseworkerId, 'a', date);
 
-    let res = await factory.patch(`/resident-profiles/a`, {
+    let res = await factory.patch(`/resident-profiles/${caseworkerId}:a`, {
       data: {
         type: 'resident-profiles',
         attributes: {
@@ -64,7 +64,7 @@ describe('update resident profile', function() {
     expect(res.body).to.deep.equal({
       data: {
         type: 'resident-profiles',
-        id: 'a',
+        id: `${caseworkerId}:a`,
         attributes: {
           creationTime: date.toISOString(),
           caseworker: caseworkerId,
@@ -94,7 +94,7 @@ describe('update resident profile', function() {
     await createProfile(caseworkerId, 'a');
     authStub.setUserGroup('hosts');
 
-    let res = await factory.patch(`/resident-profiles/a`, {
+    let res = await factory.patch(`/resident-profiles/${caseworkerId}:a`, {
       data: {
         type: 'resident-profiles',
         attributes: {
@@ -106,7 +106,7 @@ describe('update resident profile', function() {
   });
 
   it('fails if the profile does not exist', async function() {
-    let res = await factory.patch(`/resident-profiles/a`, {
+    let res = await factory.patch(`/resident-profiles/${caseworkerId}:a`, {
       data: {
         type: 'resident-profiles',
         attributes: {
@@ -120,7 +120,21 @@ describe('update resident profile', function() {
   it('fails if the profile is owner by a different caseworker', async function() {
     await createProfile(otherCaseworkerId, 'a');
 
-    let res = await factory.patch(`/resident-profiles/a`, {
+    let res = await factory.patch(`/resident-profiles/${otherCaseworkerId}:a`, {
+      data: {
+        type: 'resident-profiles',
+        attributes: {
+          matchedHost: 'ahost'
+        }
+      }
+    });
+    expect(res).to.have.status(404);
+  });
+
+  it('fails if the caseworker portion of the id is wrong', async function() {
+    await createProfile(otherCaseworkerId, 'a');
+
+    let res = await factory.patch(`/resident-profiles/${caseworkerId}:a`, {
       data: {
         type: 'resident-profiles',
         attributes: {

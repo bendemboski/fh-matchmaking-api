@@ -195,15 +195,15 @@ describe('list users', function() {
       expect(res.body.data[0].relationships).to.deep.equal({
         residents: {
           data: [
-            { type: 'resident-profiles', id: '1' },
-            { type: 'resident-profiles', id: '2' }
+            { type: 'resident-profiles', id: `${provider.groups.caseworkers[0]}:1` },
+            { type: 'resident-profiles', id: `${provider.groups.caseworkers[0]}:2` }
           ]
         }
       });
       expect(res.body.data[1].relationships).to.deep.equal({
         residents: {
           data: [
-            { type: 'resident-profiles', id: '3' }
+            { type: 'resident-profiles', id: `${provider.groups.caseworkers[1]}:3` }
           ]
         }
       });
@@ -215,7 +215,7 @@ describe('list users', function() {
       expect(res.body.included).to.deep.equal([
         {
           type: 'resident-profiles',
-          id: '1',
+          id: `${provider.groups.caseworkers[0]}:1`,
           attributes: {
             caseworker: provider.groups.caseworkers[0],
             email: 'steveholt@gmail.com'
@@ -223,7 +223,7 @@ describe('list users', function() {
         },
         {
           type: 'resident-profiles',
-          id: '2',
+          id: `${provider.groups.caseworkers[0]}:2`,
           attributes: {
             caseworker: provider.groups.caseworkers[0],
             email: 'oscar@bluth.com'
@@ -231,7 +231,7 @@ describe('list users', function() {
         },
         {
           type: 'resident-profiles',
-          id: '3',
+          id: `${provider.groups.caseworkers[1]}:3`,
           attributes: {
             caseworker: provider.groups.caseworkers[1],
             email: 'annyong@gmail.com'

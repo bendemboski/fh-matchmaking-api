@@ -66,6 +66,7 @@ class ResidentProfileSerializer extends BaseSerializer {
   }
 
   static transform(profile) {
+    profile.id = `${profile.caseworker}:${profile.id}`;
     return profile;
   }
 }
