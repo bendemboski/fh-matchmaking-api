@@ -73,6 +73,7 @@ functions:
           - "dynamodb:Query"
           - "dynamodb:GetItem"
           - "dynamoDb:UpdateItem"
+          - "dynamoDb:DeleteItem"
         Resource:
           - Fn::GetAtt:
               - HostProfilesTable
