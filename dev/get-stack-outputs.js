@@ -7,7 +7,7 @@ let { execSync } = require('child_process');
 function getStackOutputs(stageName) {
   let cmd = 'sls info --verbose';
   if (stageName) {
-    cmd = `${cmd} --stack ${stageName}`;
+    cmd = `${cmd} --stage ${stageName}`;
   }
 
   let output = execSync(cmd).toString();
