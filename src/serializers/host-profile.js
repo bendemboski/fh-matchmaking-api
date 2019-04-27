@@ -35,6 +35,7 @@ class HostProfileSerializer extends BaseSerializer {
       'host',
       'visible',
       'profilePic',
+      'profileName',
       'greeting',
       'birthdate',
       'gender',
@@ -47,7 +48,6 @@ class HostProfileSerializer extends BaseSerializer {
       'favoriteFood',
       'movieGenre',
       'mySubstances',
-      'residentSubstances',
       'neighborhood',
       'address',
       'link',
@@ -61,7 +61,8 @@ class HostProfileSerializer extends BaseSerializer {
       'photo4',
       'relationship',
       'interaction',
-      'question'
+      'question',
+      'additionalNote'
     ];
   }
 

@@ -53,7 +53,6 @@ class ResidentProfileSerializer extends BaseSerializer {
       'favoriteFood',
       'movieGenre',
       'funFact',
-      'mySubstances',
       'hostSubstances',
       'neighborhoods',
       'link',
@@ -61,7 +60,8 @@ class ResidentProfileSerializer extends BaseSerializer {
       'neighborhoodFeatures',
       'relationship',
       'interaction',
-      'question'
+      'question',
+      'additionalNote'
     ];
   }
 
