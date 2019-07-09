@@ -59,7 +59,6 @@ class ResidentProfileSerializer extends BaseSerializer {
       'busses',
       'neighborhoodFeatures',
       'relationship',
-      'interaction',
       'question',
       'additionalNote'
     ];

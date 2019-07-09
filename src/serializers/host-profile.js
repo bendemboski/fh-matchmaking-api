@@ -60,7 +60,6 @@ class HostProfileSerializer extends BaseSerializer {
       'photo3',
       'photo4',
       'relationship',
-      'interaction',
       'question',
       'additionalNote'
     ];
