@@ -45,6 +45,7 @@ describe('update host profile', function() {
   it('works and ignores unknown attributes', async function() {
     await createProfile(hostId);
 
+    // change/update
     let res = await factory.patch(`/host-profiles/${hostId}`, {
       data: {
         type: 'host-profiles',
@@ -59,6 +60,68 @@ describe('update host profile', function() {
     expect(res).to.have.status(200);
 
     let { id } = res.body.data;
+    expect(id).to.be.ok;
+    expect(res.body).to.deep.equal({
+      data: {
+        type: 'host-profiles',
+        id,
+        attributes: {
+          host: hostId,
+          visible: true
+        }
+      }
+    });
+  });
+
+  it('adds and removes attributes', async function() {
+    await createProfile(hostId);
+
+    // add
+    let res = await factory.patch(`/host-profiles/${hostId}`, {
+      data: {
+        type: 'host-profiles',
+        id: hostId,
+        attributes: {
+          host: hostId,
+          visible: true,
+          greeting: 'hey brother',
+          occupation: 'Mr Manager'
+        }
+      }
+    });
+    expect(res).to.have.status(200);
+
+    let { id } = res.body.data;
+    expect(id).to.be.ok;
+    expect(res.body).to.deep.equal({
+      data: {
+        type: 'host-profiles',
+        id,
+        attributes: {
+          host: hostId,
+          visible: true,
+          greeting: 'hey brother',
+          occupation: 'Mr Manager'
+        }
+      }
+    });
+
+    // remove
+    res = await factory.patch(`/host-profiles/${hostId}`, {
+      data: {
+        type: 'host-profiles',
+        id: hostId,
+        attributes: {
+          host: hostId,
+          visible: true,
+          greeting: '',
+          occupation: null
+        }
+      }
+    });
+    expect(res).to.have.status(200);
+
+    ({ id } = res.body.data);
     expect(id).to.be.ok;
     expect(res.body).to.deep.equal({
       data: {

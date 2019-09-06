@@ -260,25 +260,46 @@ class Dynamo {
 }
 
 function hashToUpdateExpression(hash) {
-  let expressions = [];
+  let setExpressions = [];
+  let removeExpressions = [];
   let names = {};
   let values = {};
 
   Object.keys(hash).forEach((name, i) => {
-    expressions.push(`#key${i}=:value${i}`);
+    let value = hash[name];
+    // If the value is falsey (but not actually false) then we treat it as an
+    // attribute deletion (this is mainly because dynamo doesn't allow empty
+    // strings).
+    if (value || value === false) {
+      setExpressions.push(`#key${i}=:value${i}`);
+      values[`:value${i}`] = hash[name];
+    } else {
+      removeExpressions.push(`#key${i}`);
+    }
     names[`#key${i}`] = name;
-    values[`:value${i}`] = hash[name];
   });
+
+  let expressions = [];
+  if (setExpressions.length) {
+    expressions.push(`set ${setExpressions.join(', ')}`);
+  }
+  if (removeExpressions.length) {
+    expressions.push(`remove ${removeExpressions.join(', ')}`);
+  }
 
   if (expressions.length === 0) {
     return {};
   }
 
-  return {
-    UpdateExpression: `set ${expressions.join(', ')}`,
-    ExpressionAttributeNames: names,
-    ExpressionAttributeValues: values
+  let ret = {
+    UpdateExpression: expressions.join(' '),
+    ExpressionAttributeNames: names
   };
+  if (Object.keys(values).length) {
+    ret.ExpressionAttributeValues = values;
+  }
+
+  return ret;
 }
 
 module.exports = Dynamo;

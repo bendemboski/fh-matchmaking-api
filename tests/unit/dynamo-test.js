@@ -577,4 +577,88 @@ describe('dynamo', function() {
       }).promise()).to.eventually.have.property('Count', 2);
     });
   });
+
+  describe('update functionality', function() {
+    let client;
+
+    beforeEach(async function() {
+      client = new AWS.DynamoDB.DocumentClient({ service });
+
+      await client.batchWrite({
+        RequestItems: {
+          [process.env.HOST_PROFILES_TABLE]: [
+            { PutRequest: { Item: { host: '1', visible: true, string1: 'value1', string2: 'value2' } } }
+          ]
+        }
+      }).promise();
+    });
+
+    it('can update one value', async function() {
+      await expect(dynamo.updateHostProfile('1', {
+        string1: 'newvalue1'
+      })).to.eventually.deep.equal({
+        host: '1',
+        visible: true,
+        string1: 'newvalue1',
+        string2: 'value2'
+      });
+    });
+
+    it('can update multiple values', async function() {
+      await expect(dynamo.updateHostProfile('1', {
+        string1: 'newvalue1',
+        string2: 'newvalue2'
+      })).to.eventually.deep.equal({
+        host: '1',
+        visible: true,
+        string1: 'newvalue1',
+        string2: 'newvalue2'
+      });
+    });
+
+    it('can remove one value', async function() {
+      await expect(dynamo.updateHostProfile('1', {
+        string1: ''
+      })).to.eventually.deep.equal({
+        host: '1',
+        visible: true,
+        string2: 'value2'
+      });
+    });
+
+    it('can remove multiple values', async function() {
+      await expect(dynamo.updateHostProfile('1', {
+        string1: '',
+        string2: ''
+      })).to.eventually.deep.equal({
+        host: '1',
+        visible: true
+      });
+    });
+
+    it('can remove and update values', async function() {
+      await expect(dynamo.updateHostProfile('1', {
+        string1: '',
+        string2: '',
+        newstring1: 'newvalue1',
+        newstring2: 'newvalue2'
+      })).to.eventually.deep.equal({
+        host: '1',
+        visible: true,
+        newstring1: 'newvalue1',
+        newstring2: 'newvalue2'
+      });
+    });
+
+    it('can update a boolean value to false', async function() {
+      await expect(dynamo.updateHostProfile('1', {
+        visible: false
+      })).to.eventually.deep.equal({
+        host: '1',
+        visible: false,
+        string1: 'value1',
+        string2: 'value2'
+      });
+    });
+  });
 });

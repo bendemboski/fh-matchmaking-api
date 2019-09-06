@@ -87,7 +87,61 @@ describe('update resident profile', function() {
         matchedHost: 'ahost'
       }
     });
+  });
 
+  it('adds and removes attributes', async function() {
+    let date = new Date(2019, 1, 15);
+    await createProfile(caseworkerId, 'a', date);
+
+    // add
+    let res = await factory.patch(`/resident-profiles/${caseworkerId}:a`, {
+      data: {
+        type: 'resident-profiles',
+        attributes: {
+          caseworker: caseworkerId,
+          question: 'Where did the lighter fluid come from?',
+          occupation: 'Mr Manager'
+        }
+      }
+    });
+    expect(res).to.have.status(200);
+
+    expect(res.body).to.deep.equal({
+      data: {
+        type: 'resident-profiles',
+        id: `${caseworkerId}:a`,
+        attributes: {
+          creationTime: date.toISOString(),
+          caseworker: caseworkerId,
+          question: 'Where did the lighter fluid come from?',
+          occupation: 'Mr Manager'
+        }
+      }
+    });
+
+    // remove
+    res = await factory.patch(`/resident-profiles/${caseworkerId}:a`, {
+      data: {
+        type: 'resident-profiles',
+        attributes: {
+          caseworker: caseworkerId,
+          question: '',
+          occupation: null
+        }
+      }
+    });
+    expect(res).to.have.status(200);
+
+    expect(res.body).to.deep.equal({
+      data: {
+        type: 'resident-profiles',
+        id: `${caseworkerId}:a`,
+        attributes: {
+          creationTime: date.toISOString(),
+          caseworker: caseworkerId
+        }
+      }
+    });
   });
 
   it('fails if the user is not a caseworker', async function() {
