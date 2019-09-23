@@ -53,6 +53,7 @@ class HostProfileSerializer extends BaseSerializer {
       'lightRailStation',
       'busses',
       'neighborhoodFeatures',
+      'neighborhoodDescription',
       'backyardActivities',
       'backyardDescription',
       'photo1',

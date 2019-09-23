@@ -54,8 +54,6 @@ class ResidentProfileSerializer extends BaseSerializer {
       'funFact',
       'hostSubstances',
       'neighborhoods',
-      'lightRail',
-      'busses',
       'neighborhoodFeatures',
       'relationship',
       'question',
