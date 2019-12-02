@@ -126,6 +126,109 @@ describe('cognito', function() {
     });
   });
 
+  describe('updateUser', function() {
+    let updateUserAttributesPromiseStub;
+    let deleteUserAttributesPromiseStub;
+
+    beforeEach(function() {
+      updateUserAttributesPromiseStub = sinon.stub().resolves();
+      deleteUserAttributesPromiseStub = sinon.stub().resolves();
+      sinon.stub(cognito.provider, 'adminUpdateUserAttributes').returns({ promise: updateUserAttributesPromiseStub });
+      sinon.stub(cognito.provider, 'adminDeleteUserAttributes').returns({ promise: deleteUserAttributesPromiseStub });
+    });
+
+    it('updates attributes', async function() {
+      await expect(cognito.updateUser('user@domain.com', [
+        {
+          Name: 'email',
+          Value: 'user@domain.com'
+        },
+        {
+          Name: 'given_name',
+          Value: 'Person'
+        },
+        {
+          Name: 'family_name',
+          Value: 'McHuman'
+        }
+      ], [])).to.be.fulfilled;
+
+      expect(cognito.provider.adminUpdateUserAttributes).to.have.been.calledWith({
+        UserPoolId: process.env.USER_POOL,
+        Username: 'user@domain.com',
+        UserAttributes: [
+          {
+            Name: 'email',
+            Value: 'user@domain.com'
+          },
+          {
+            Name: 'given_name',
+            Value: 'Person'
+          },
+          {
+            Name: 'family_name',
+            Value: 'McHuman'
+          },
+          {
+            Name: 'email_verified',
+            Value: 'true'
+          }
+        ]
+      });
+      expect(updateUserAttributesPromiseStub).to.have.been.called;
+
+      expect(cognito.provider.adminDeleteUserAttributes).to.not.have.been.called;
+    });
+
+    it('deletes attributes', async function() {
+      await expect(cognito.updateUser('user@domain.com', [], [
+        'birthdate',
+        'phone_number'
+      ])).to.be.fulfilled;
+
+      expect(cognito.provider.adminDeleteUserAttributes).to.have.been.calledWith({
+        UserPoolId: process.env.USER_POOL,
+        Username: 'user@domain.com',
+        UserAttributeNames: [ 'birthdate', 'phone_number' ]
+      });
+      expect(deleteUserAttributesPromiseStub).to.have.been.called;
+
+      expect(cognito.provider.adminUpdateUserAttributes).to.not.have.been.called;
+    });
+
+    it('updates and deletes attributes', async function() {
+      await expect(cognito.updateUser('user@domain.com', [
+        {
+          Name: 'given_name',
+          Value: 'Person'
+        }
+      ], [ 'birthdate' ])).to.be.fulfilled;
+
+      expect(cognito.provider.adminUpdateUserAttributes).to.have.been.calledWith({
+        UserPoolId: process.env.USER_POOL,
+        Username: 'user@domain.com',
+        UserAttributes: [
+          {
+            Name: 'given_name',
+            Value: 'Person'
+          },
+          {
+            Name: 'email_verified',
+            Value: 'true'
+          }
+        ]
+      });
+      expect(updateUserAttributesPromiseStub).to.have.been.called;
+
+      expect(cognito.provider.adminDeleteUserAttributes).to.have.been.calledWith({
+        UserPoolId: process.env.USER_POOL,
+        Username: 'user@domain.com',
+        UserAttributeNames: [ 'birthdate' ]
+      });
+      expect(deleteUserAttributesPromiseStub).to.have.been.called;
+    });
+  });
+
   describe('listUsers', function() {
     let listUsersPromiseStub;
 

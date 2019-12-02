@@ -42,6 +42,25 @@ class FakeCognitoProvider {
     return promise();
   }
 
+  adminDeleteUserAttributes({ Username: username, UserAttributeNames: names }) {
+    let user = this.users[username];
+    if (!user) {
+      let e = new Error('User does not exist.');
+      e.code = 'UserNotFoundException';
+      e.statusCode = 400;
+      return promiseError(e);
+    }
+
+    names.forEach((name) => {
+      let index = user.attributes.findIndex((attr) => attr.Name === name);
+      if (index !== -1) {
+        user.attributes.splice(index, 1);
+      }
+    });
+
+    return promise();
+  }
+
   adminAddUserToGroup({ Username: username, GroupName: group }) {
     this.groups[group].push(username);
     return promise();

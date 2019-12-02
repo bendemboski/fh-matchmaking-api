@@ -209,7 +209,7 @@ function buildUserRoutes(app) {
         email: true
       },
       'phone_number': {
-        format: /^\d{10}$/
+        format: /^(\d{10})?$/
       }
     });
     if (errors) {
@@ -220,14 +220,22 @@ function buildUserRoutes(app) {
       hash.phone_number = `+1${hash.phone_number}`; // eslint-disable-line camelcase
     }
 
-    Object.keys(hash).forEach((key) => {
+    let deleteNames = [];
+
+    // Filter out unrecognized attributes and convert null attributes to
+    // deletions
+    Object.entries(hash).forEach(([ key, value ]) => {
       if (!userAttributes.includes(key)) {
+        delete hash[key];
+      }
+      if (!value) {
+        deleteNames.push(key);
         delete hash[key];
       }
     });
 
     let attrs = hashToAttrs(hash);
-    if (await aws.cognito.updateUser(id, attrs)) {
+    if (await aws.cognito.updateUser(id, attrs, deleteNames)) {
       return res.status(204).send();
     } else {
       return res.status(404).send();

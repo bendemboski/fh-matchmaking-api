@@ -95,13 +95,29 @@ class Cognito {
     return user;
   }
 
-  async updateUser(username, attributes) {
+  async updateUser(username, attributes, deleteNames) {
     try {
-      await this.provider.adminUpdateUserAttributes({
-        UserPoolId: this.userPoolId,
-        Username: username,
-        UserAttributes: attributes
-      }).promise();
+      if (attributes.length > 0) {
+        await this.provider.adminUpdateUserAttributes({
+          UserPoolId: this.userPoolId,
+          Username: username,
+          UserAttributes: [
+            ...attributes,
+            // make sure email remains verified even if it changes
+            {
+              Name: 'email_verified',
+              Value: 'true'
+            }
+          ]
+        }).promise();
+      }
+      if (deleteNames.length > 0) {
+        await this.provider.adminDeleteUserAttributes({
+          UserPoolId: this.userPoolId,
+          Username: username,
+          UserAttributeNames: deleteNames
+        }).promise();
+      }
       return true;
     } catch (e) {
       if (e.code === 'UserNotFoundException') {

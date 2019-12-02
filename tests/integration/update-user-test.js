@@ -120,6 +120,10 @@ describe('update user', function() {
         {
           Name: 'birthdate',
           Value: '03/18/1980'
+        },
+        {
+          Name: 'email_verified',
+          Value: 'true'
         }
       ]));
     });
@@ -149,6 +153,60 @@ describe('update user', function() {
         {
           Name: 'family_name',
           Value: 'Hale'
+        },
+        {
+          Name: 'email_verified',
+          Value: 'true'
+        }
+      ]));
+    });
+
+    it('deletes attributes', async function() {
+      let res = await factory.patch(`/admins/${adminId}`, {
+        data: {
+          type: 'admins',
+          id: adminId,
+          attributes: {
+            givenName: '',
+            familyName: null
+          }
+        }
+      });
+      expect(res).to.have.status(204);
+
+      expect(sort(provider.users[adminId].attributes)).to.deep.equal(sort([
+        {
+          Name: 'email',
+          Value: 'heybrother@bluth.com'
+        }
+      ]));
+    });
+
+    it('updates and deletes attributes', async function() {
+      let res = await factory.patch(`/admins/${adminId}`, {
+        data: {
+          type: 'admins',
+          id: adminId,
+          attributes: {
+            givenName: '',
+            familyName: 'Ostero'
+          }
+        }
+      });
+      expect(res).to.have.status(204);
+
+      expect(sort(provider.users[adminId].attributes)).to.deep.equal(sort([
+        {
+          Name: 'email',
+          Value: 'heybrother@bluth.com'
+        },
+        {
+          Name: 'family_name',
+          Value: 'Ostero'
+        },
+        {
+          Name: 'email_verified',
+          Value: 'true'
         }
       ]));
     });
