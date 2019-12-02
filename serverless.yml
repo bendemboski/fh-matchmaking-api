@@ -63,6 +63,7 @@ functions:
           - "cognito-idp:AdminGetUser"
           - "cognito-idp:AdminListGroupsForUser"
           - "cognito-idp:AdminUpdateUserAttributes"
+          - "cognito-idp:AdminDeleteUserAttributes"
         Resource:
           Fn::GetAtt:
             - CognitoUserPoolUserPool
