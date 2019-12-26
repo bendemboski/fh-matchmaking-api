@@ -30,7 +30,7 @@
     "dynamodb-local": "^0.0.22",
     "eslint": "^5.2.0",
     "eslint-plugin-node": "^7.0.1",
-    "js-yaml": "^3.12.0",
+    "js-yaml": "^3.13.1",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.9",
     "serverless": "^1.29.1",
